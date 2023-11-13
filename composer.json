@@ -1,0 +1,19 @@
+{
+    "name": "tv2regionerne/statamic-events",
+    "autoload": {
+        "psr-4": {
+            "Tv2regionerne\\StatamicEvents\\": "src"
+        }
+    },
+    "extra": {
+        "statamic": {
+            "name": "Statamic Events",
+            "description": "Statamic Events addon"
+        },
+        "laravel": {
+            "providers": [
+                "Tv2regionerne\\StatamicEvents\\ServiceProvider"
+            ]
+        }
+    }
+}
