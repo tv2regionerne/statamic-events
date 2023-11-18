@@ -7,25 +7,25 @@ use Statamic\Facades\Antlers;
 
 class WebhookDriver extends AbstractDriver
 {
-    public function handle($handler, string $event, array $data) : void
+    public function handle(array $config, string $event, array $data): void
     {
-        if (! $handler->url) {
+        if (! $handler['url']) {
             return;
         }
             
-        $request = ($handler->async ? Http : Http::async);
+        $request = ($handler['async'] ? Http : Http::async);
             
         // payload?
-        if ($handler->payload) {
+        if ($handler['payload']) {
 
-            $payload = Antlers::parse($handler->payload, array_merge([
+            $payload = Antlers::parse($handler['payload'], array_merge([
                     'trigger_event' => $event, 
                 ], $data));
                 
-            $request->withBody($payload, $handler->content_type);
+            $request->withBody($payload, $handler['content_type']);
         }
         
-        $request->{$handler->method}($url);
+        $request->{$handler['method']}($handler['url']);
     }
     
     public function blueprintFields(): array

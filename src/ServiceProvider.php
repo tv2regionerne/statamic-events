@@ -14,12 +14,16 @@ class ServiceProvider extends AddonServiceProvider
 
     public function bootAddon()
     {
-        $this->mergeConfigFrom(dirname(__DIR__).'/config/statamic-events.php', 'statamic-events');
+        parent::boot();
+
+        $this->mergeConfigFrom(__DIR__.'/../config/statamic-events.php', 'statamic-events');
         
         $this->publishes([
-            dirname(__DIR__) => config_path('statamic-events.php'),
+            __DIR__.'/../config/statamic-events.php' => config_path('statamic/statamic-events.php'),
         ], 'statamic-events-config');
-        
+                
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+    
         $this->bootDrivers();
     }
     

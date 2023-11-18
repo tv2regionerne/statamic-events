@@ -7,13 +7,13 @@ use Statamic\Facades\Antlers;
 
 class AuditDriver extends AbstractDriver
 {
-    public function handle($handler, string $event, array $data) : void
+    public function handle(array $config, string $event, array $data): void
     {
-        $message = Antlers::parse($handler->message, array_merge([
+        $message = Antlers::parse($config['message'], array_merge([
                 'trigger_event' => $event, 
             ], $data));
             
-        Log::{$handler->level ?? 'info'}($message);    
+        Log::{$handler['level'] ?? 'info'}($message);    
     }
     
     public function blueprintFields(): array

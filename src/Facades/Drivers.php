@@ -1,6 +1,6 @@
 <?php
 
-namespace Tv2regionerne\StatamicEvents\Drivers;
+namespace Tv2regionerne\StatamicEvents\Facades;
 
 use Illuminate\Support\Facades\Facade;
 use Tv2regionerne\StatamicEvents\Managers\DriverManager;
