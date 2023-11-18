@@ -2,54 +2,29 @@
 
 namespace Tv2regionerne\StatamicEvents\Listeners;
 
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Http;
-use Statamic\Eloquent\Entries\Entry;
+use Tv2regionerne\StatamicEvents\Facades\Drivers;
 
 class EventSubscriber
 {
-
-    /**
-     * Create the event listener.
-     */
-    public function __construct()
-    {
-
-    }
-
     public function subscribe($dispatcher)
     {
         $dispatcher->listen('*', self::class.'@handleEvent');
     }
 
-    public function handleEvent($event, $data)
+    public function handleEvent($event, $params)
     {
-
-        if (!class_exists($event)) {
+        if (! class_exists($event)) {
             return;
         }
-
-        if ($eventHandlers = data_get(config('statamic-events.events'), $event)) {
-            foreach ($eventHandlers as $eventHandler) {
-                switch ($eventHandler['type']) {
-                    case 'webhook':
-                        $entry = $data[0]->entry;
-                        $data = $this->callWebhook($eventHandler, $event, $data);
-                        $eventHandler['handler']($entry, $data);
-                        break;
-                }
+        
+        // get handlers matching this event
+        // think about caching - events can be run multiple times per request
+        $handlers = ....;
+        
+        $handlers->each(function ($handler) use ($event, $params) {
+            if ($driver = Drivers::all()->get($handler->driver)) {
+                $driver->handle($handler, $params);
             }
-        }
-    }
-
-    public function callWebhook($eventHandler, $event, $data)
-    {
-        /** @var Entry $entry */
-        $entry = $data[0]->entry;
-
-        $input = $eventHandler['payload']($entry);
-
-        $repsonse = Http::post($eventHandler['endpoint'], $input);
-        return $repsonse->collect();
+        });
     }
 }

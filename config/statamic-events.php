@@ -1,9 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Http;
-use Statamic\Eloquent\Entries\Entry;
+use Tv2regionerne\StatamicEvents\Drivers;
 
 return [
+    
+    'drivers' => [
+        'audit' => Drivers\AuditDriver::class,
+        'webhook' => Drivers\WebhookDriver::class,
+    ],
 
     'events' => [
 //        'Statamic\Events\EntrySaving' => [
