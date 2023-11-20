@@ -22,8 +22,8 @@ class AuditDriver extends AbstractDriver
             'level' => [
                 'handle' => 'level',
                 'field' => [
+                    'display' => __('Level'),
                     'type' => 'select',
-                    'handle' => 'level',
                     'required' => true,
                     'listable' => 'hidden',
                     'options' => [
@@ -40,9 +40,9 @@ class AuditDriver extends AbstractDriver
             ],
             'message' => [
                 'handle' => 'message',
-                'field' => [                        
+                'field' => [    
+                    'display' => __('Message'),
                     'type' => 'textarea',
-                    'handle' => 'message',
                     'required' => true,
                 ],
             ],

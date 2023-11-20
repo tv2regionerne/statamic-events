@@ -238,17 +238,20 @@ class CpController extends StatamicController
             ->setContents($fields)
             ->ensureFieldsInTab([
                 'driver' => [
+                    'display' => __('Driver'),
                     'handle' => 'driver',
                     'type' => 'hidden',
                     'listable' => 'listable',
                 ],
                 'event' => [
+                    'display' => __('Event'),
                     'handle' => 'event',
                     'type' => 'text',
                     'listable' => 'listable',
                     'required' => true
                 ],
                 'title' => [
+                    'display' => __('Title'),
                     'handle' => 'title',
                     'type' => 'text',
                     'listable' => 'listable',
