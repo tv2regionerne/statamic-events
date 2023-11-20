@@ -31,4 +31,9 @@ class AuditDriver extends AbstractDriver
             ],
         ];
     }
+    
+    public function title(): string
+    {
+        return __('Audit');    
+    }
 }

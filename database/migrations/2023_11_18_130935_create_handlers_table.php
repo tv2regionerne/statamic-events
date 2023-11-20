@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('event');
+            $table->string('driver');
             $table->jsonb('config');
             $table->timestamps();
             $table->softDeletes();

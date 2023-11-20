@@ -2,20 +2,38 @@
 
 namespace Tv2regionerne\StatamicEvents;
 
+use Statamic\Facades\CP\Nav;
+use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
 use Tv2regionerne\StatamicEvents\Facades\Drivers;
 use Tv2regionerne\StatamicEvents\Listeners\EventSubscriber;
 
 class ServiceProvider extends AddonServiceProvider
 {
+    protected $actions = [
+        Actions\DeleteHandler::class,
+    ];
+
+    protected $routes = [
+        'cp' => __DIR__.'/../routes/cp.php',
+    ];
+
     protected $subscribe = [
         EventSubscriber::class,
+    ];
+    
+    protected $vite = [
+        'publicDirectory' => 'dist',
+        'input' => [
+            'resources/js/cp.js',
+        ],
     ];
 
     public function bootAddon()
     {
         parent::boot();
 
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'statamic-events');
         $this->mergeConfigFrom(__DIR__.'/../config/statamic-events.php', 'statamic-events');
         
         $this->publishes([
@@ -24,7 +42,9 @@ class ServiceProvider extends AddonServiceProvider
                 
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
     
-        $this->bootDrivers();
+        $this->bootDrivers()
+            ->bootPermissions()
+            ->bootNavigation();
     }
     
     private function bootDrivers()
@@ -32,6 +52,26 @@ class ServiceProvider extends AddonServiceProvider
         collect(config('statamic-events.drivers', []))
             ->each(fn ($class, $handle) => Drivers::add($handle, $class));
                 
+        return $this;
+    }
+    
+    private function bootNavigation()
+    {
+        Nav::extend(function ($nav) {
+            $nav->create(__('Event Handlers'))
+                ->section(__('Utilities'))
+                ->icon('time')
+                ->route('statamic-events.index')
+                ->can('view events');
+        });
+                
+        return $this;
+    }
+    
+    private function bootPermissions()
+    {
+        Permission::register('view statamic events')->group('Statamic Events');
+            
         return $this;
     }
 }
