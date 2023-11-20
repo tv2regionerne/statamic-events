@@ -41,6 +41,12 @@ class EventSubscriber
 
     private function getHandlers()
     {
-        return Blink::once('statamic-events-handlers::all', fn () => Handler::all());
+        return Blink::once('statamic-events-handlers::all', function () {
+            try {
+                return Handler::all();
+            } catch (\Throwable $e) {
+                return collect();
+            }
+        });
     }
 }
