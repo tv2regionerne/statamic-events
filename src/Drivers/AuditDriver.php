@@ -10,12 +10,12 @@ class AuditDriver extends AbstractDriver
     public function handle(array $config, string $eventName, $event): void
     {
         $message = Antlers::parse($config['message'], array_merge([
-                'trigger_event' => $eventName, 
+                'trigger_event' => $eventName,
             ], get_object_vars($event)));
-            
-        Log::{$handler['level'] ?? 'info'}($message);   
+
+        Log::{$config['level'] ?? 'info'}((string) $message);
     }
-    
+
     public function blueprintFields(): array
     {
         return [
@@ -40,7 +40,7 @@ class AuditDriver extends AbstractDriver
             ],
             'message' => [
                 'handle' => 'message',
-                'field' => [    
+                'field' => [
                     'display' => __('Message'),
                     'type' => 'textarea',
                     'required' => true,
@@ -48,9 +48,9 @@ class AuditDriver extends AbstractDriver
             ],
         ];
     }
-    
+
     public function title(): string
     {
-        return __('Audit');    
+        return __('Audit');
     }
 }

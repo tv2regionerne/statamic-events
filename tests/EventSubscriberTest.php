@@ -1,9 +1,6 @@
 <?php
 
 uses(\Tv2regionerne\StatamicEvents\Tests\TestCase::class);
-use \Statamic\Facades\Entry;
-use \Statamic\Facades\Collection;
-use \Statamic\Facades\Blink;
 use Illuminate\Support\Facades\Event;
 use Statamic\Facades;
 use Tv2regionerne\StatamicEvents\Facades\Drivers;
