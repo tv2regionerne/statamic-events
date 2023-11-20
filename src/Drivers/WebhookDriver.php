@@ -7,7 +7,7 @@ use Statamic\Facades\Antlers;
 
 class WebhookDriver extends AbstractDriver
 {
-    public function handle(array $config, string $event, array $data): void
+    public function handle(array $config, string $eventName, $event): void
     {
         if (! $handler['url']) {
             return;

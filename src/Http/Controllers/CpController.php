@@ -29,6 +29,8 @@ class CpController extends StatamicController
     {
         $blueprint = $this->blueprint();
 
+        $blueprint = $this->ensureAllListableFields($blueprint);
+
         $listingConfig = [
             'preferencesPrefix' => 'statamic-events',
             'requestUrl' => cp_route('statamic-events.listing-api'),
@@ -63,13 +65,14 @@ class CpController extends StatamicController
     {
         $blueprint = $this->blueprint();
 
+        $blueprint = $this->ensureAllListableFields($blueprint);
+
         $sortField = $request->input('sort', 'title');
         $sortDirection = $request->input('order', 'asc');
 
         $query = Handler::query()
             ->orderBy($sortField, $sortDirection)
             ->when($search = $request->input('search'), fn ($query) => $query->where('title', 'like', "%{$search}%")->orWhere('event', 'like', "%{$search}%"));
-
 
         $activeFilterBadges = $this->queryFilters($query, $request->filters, [
             'blueprints' => [$blueprint],
@@ -160,16 +163,17 @@ class CpController extends StatamicController
             throw new NotFoundHttpException();
         }
 
-        $blueprint = $this->blueprint();
+
+        $driver = Drivers::all()->get($record->driver) ?? Drivers::all()->first();
+
+        $blueprint = $this->blueprint($driver->blueprintFields());
 
         $values = $this->prepareModelForPublishForm($blueprint, $record);
 
         $fields = $blueprint->fields()->addValues($values)->preProcess();
 
-        $driverTitle = Drivers::all()->get($fields->get('driver')->value())->title();
-
         $viewData = [
-            'title' => __('Edit :driver', ['driver' => $driverTitle]),
+            'title' => __('Edit :driver', ['driver' => $record->title]),
             'action' => cp_route('statamic-events.update', [
                 'record' => $record->getKey(),
             ]),
@@ -197,7 +201,9 @@ class CpController extends StatamicController
 
     public function update(UpdateRequest $request, $record)
     {
-        $blueprint = $this->blueprint();
+        $driver = Drivers::all()->get($request->input('driver')) ?? Drivers::all()->first();
+
+        $blueprint = $this->blueprint($driver->blueprintFields());
 
         $blueprint->fields()->addValues($request->all())->validator()->validate();
 
@@ -223,35 +229,77 @@ class CpController extends StatamicController
         ]);
     }
 
-    private function blueprint(): Blueprint
+    private function blueprint(?array $fields = []): Blueprint
     {
+        $fields = $this->ensureFieldsAreTabbed($fields);
+
         return Blueprint::make()
             ->setHandle('statamic-events')
-            ->setContents([
-                'handle' => 'general',
-                'fields' => [
-                    'title' => [
-                        'handle' => 'title',
-                        'field' => [
-                            'type' => 'text',
-                            'listable' => 'listable',
-                        ],
-                    ],
-                    'event' => [
-                        'handle' => 'event',
-                        'field' => [
-                            'type' => 'text',
-                            'listable' => 'listable',
-                        ],
-                    ],
-                    'driver' => [
-                        'handle' => 'driver',
-                        'field' => [
-                            'type' => 'hidden',
-                            'listable' => 'listable',
-                        ],
-                    ],
+            ->setContents($fields)
+            ->ensureFieldsInTab([
+                'driver' => [
+                    'handle' => 'driver',
+                    'type' => 'hidden',
+                    'listable' => 'listable',
                 ],
-            ]);
+                'event' => [
+                    'handle' => 'event',
+                    'type' => 'text',
+                    'listable' => 'listable',
+                    'required' => true
+                ],
+                'title' => [
+                    'handle' => 'title',
+                    'type' => 'text',
+                    'listable' => 'listable',
+                    'required' => true,
+                ],
+            ], 'main', true);
+    }
+
+    private function ensureAllListableFields($blueprint)
+    {
+        $fields = Drivers::all()->map(function ($driver, $handle) use ($blueprint) {
+            $driverFields = $this->ensureFieldsAreTabbed($driver->blueprintFields());
+
+            $fields = Blueprint::make()
+                    ->setHandle('statamic-events-'.$handle)
+                    ->setContents($driverFields)
+                    ->fields()
+                    ->all()
+                    ->filter(fn (Field $field) => $field->isVisibleOnListing() || $field->get('listable', '') == 'hidden')
+                    ->each(fn ($field) => $blueprint->ensureField($field->handle(), $field->config()));
+        });
+
+        return $blueprint;
+    }
+
+    private function ensureFieldsAreTabbed(array $fields)
+    {
+        if (! isset($fields['tabs'])) {
+            $fields = [
+                'tabs' => [
+                    'main' => [
+                        'display' => __('main'),
+                        'sections' => $this->ensureFieldsAreSectioned($fields),
+                    ]
+                ],
+            ];
+        }
+
+        return $fields;
+    }
+
+    private function ensureFieldsAreSectioned(array $fields)
+    {
+        if (! isset($fields['sections'])) {
+            $fields = [
+                [
+                    'fields' => $fields,
+                ],
+            ];
+        }
+
+        return $fields;
     }
 }
