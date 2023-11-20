@@ -44,15 +44,6 @@ trait PreparesModels
                     return;
                 }
 
-                // When $processedValue is null and there's no cast set on the model, we should JSON encode it.
-                if (
-                    is_array($processedValue)
-                    && ! str_contains($field->handle(), '->')
-                    && ! $model->hasCast($field->handle(), ['json', 'array', 'collection', 'object', 'encrypted:array', 'encrypted:collection', 'encrypted:object'])
-                ) {
-                    $processedValue = json_encode($processedValue, JSON_THROW_ON_ERROR);
-                }
-
                 $handle = $field->handle();
 
                 if (in_array($handle, ['id', 'title', 'driver', 'event'])) {
