@@ -5,11 +5,11 @@ namespace Tv2regionerne\StatamicEvents\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Statamic\Facades\User;
 
-class CreateRequest extends FormRequest
+class UpdateRequest extends FormRequest
 {
     public function authorize()
     {
-        return User::current()->can('create statamic events');
+        return User::current()->can('edit statamic events');
     }
 
     public function rules()

@@ -13,8 +13,10 @@ use Statamic\Http\Requests\FilteredRequest;
 use Statamic\Query\Scopes\Filters\Concerns\QueriesFilters;
 use Tv2regionerne\StatamicEvents\Facades\Drivers;
 use Tv2regionerne\StatamicEvents\Http\Requests\CreateRequest;
+use Tv2regionerne\StatamicEvents\Http\Requests\EditRequest;
 use Tv2regionerne\StatamicEvents\Http\Requests\IndexRequest;
 use Tv2regionerne\StatamicEvents\Http\Requests\StoreRequest;
+use Tv2regionerne\StatamicEvents\Http\Requests\UpdateRequest;
 use Tv2regionerne\StatamicEvents\Http\Resources\HandlerCollection;
 use Tv2regionerne\StatamicEvents\Models\Handler;
 use Tv2regionerne\StatamicEvents\Traits\PreparesModels;
@@ -41,7 +43,7 @@ class CpController extends StatamicController
         return view('statamic-events::index', [
             'title' => __('Event Handlers'),
             'recordCount' => Handler::count(),
-            'primaryColumn' => Handler::make()->getKey(),
+            'primaryColumn' => 'title',
             'columns' => $blueprint->columns()
                 ->filter(fn ($column) => in_array($column->field, collect($columns)->pluck('handle')->toArray()))
                 ->rejectUnlisted()
@@ -110,7 +112,7 @@ class CpController extends StatamicController
             'action' => cp_route('statamic-events.store'),
             'method' => 'POST',
             'breadcrumbs' => new Breadcrumbs([[
-                'text' => $driverTitle,
+                'text' => __('Event Handlers'),
                 'url' => cp_route('statamic-events.index'),
             ]]),
             'blueprint' => $blueprint->toPublishArray(),
@@ -150,43 +152,38 @@ class CpController extends StatamicController
         ];
     }
 
-    public function edit(EditRequest $request, Resource $resource, $record)
+    public function edit(EditRequest $request, $record)
     {
-        $record = $resource->model()
-            ->where($resource->model()->qualifyColumn($resource->routeKey()), $record)
-            ->first();
+        $record = Handler::find($record);
 
         if (! $record) {
             throw new NotFoundHttpException();
         }
 
+        $blueprint = $this->blueprint();
+
         $values = $this->prepareModelForPublishForm($blueprint, $record);
 
-        $blueprint = $resource->blueprint();
         $fields = $blueprint->fields()->addValues($values)->preProcess();
 
+        $driverTitle = Drivers::all()->get($fields->get('driver')->value())->title();
+
         $viewData = [
-            'title' => __('Edit :resource', ['resource' => $resource->singular()]),
-            'action' => cp_route('runway.update', [
-                'resource' => $resource->handle(),
-                'record' => $record->{$resource->routeKey()},
+            'title' => __('Edit :driver', ['driver' => $driverTitle]),
+            'action' => cp_route('statamic-events.update', [
+                'record' => $record->getKey(),
             ]),
             'method' => 'PATCH',
             'breadcrumbs' => new Breadcrumbs([[
-                'text' => $resource->plural(),
-                'url' => cp_route('runway.index', [
-                    'resource' => $resource->handle(),
-                ]),
+                'text' => __('Event Handlers'),
+                'url' => cp_route('statamic-events.index'),
             ]]),
-            'resource' => $resource,
             'blueprint' => $blueprint->toPublishArray(),
             'values' => $fields->values(),
             'meta' => $fields->meta(),
-            'permalink' => $resource->hasRouting() ? $record->uri() : null,
-            'resourceHasRoutes' => $resource->hasRouting(),
             'currentRecord' => [
                 'id' => $record->getKey(),
-                'title' => $record->{$resource->titleField()},
+                'title' => $record->title,
                 'edit_url' => $request->url(),
             ],
         ];
@@ -195,20 +192,22 @@ class CpController extends StatamicController
             return $viewData;
         }
 
-        return view('runway::edit', $viewData);
+        return view('statamic-events::edit', $viewData);
     }
 
-    public function update(UpdateRequest $request, Resource $resource, $record)
+    public function update(UpdateRequest $request, $record)
     {
-        $resource->blueprint()->fields()->addValues($request->all())->validator()->validate();
+        $blueprint = $this->blueprint();
 
-        $model = $resource->model()->where($resource->model()->qualifyColumn($resource->routeKey()), $record)->first();
+        $blueprint->fields()->addValues($request->all())->validator()->validate();
 
-        $this->prepareModelForSaving($resource, $model, $request);
+        $model = Handler::find($record);
+
+        $this->prepareModelForSaving($blueprint, $model, $request);
 
         $model->save();
 
-        return ['data' => $this->getReturnData($resource, $model)];
+        return ['data' => $this->getReturnData($model)];
     }
 
     /**

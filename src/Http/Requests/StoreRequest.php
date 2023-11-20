@@ -9,7 +9,7 @@ class StoreRequest extends FormRequest
 {
     public function authorize()
     {
-        return User::current()->can('view statamic events');
+        return User::current()->can('create statamic events');
     }
 
     public function rules()

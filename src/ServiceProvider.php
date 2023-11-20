@@ -70,7 +70,21 @@ class ServiceProvider extends AddonServiceProvider
     
     private function bootPermissions()
     {
-        Permission::register('view statamic events')->group('Statamic Events');
+        Permission::register('view statamic events', function ($permission) {
+            $permission
+                ->label(__('View Event Handlers'))
+                ->children([
+                    Permission::make("edit statamic events")
+                        ->label(__('Edit Event Handlers'))
+                        ->children([
+                            Permission::make("create statamic events")
+                                ->label(__('Create Event Handlers')),
+
+                            Permission::make("delete statamic events")
+                                ->label(__('Delete Event Handlers')),
+                        ]),
+                ]);
+        })->group('Statamic Events');
             
         return $this;
     }

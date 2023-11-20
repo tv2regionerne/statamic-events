@@ -25,11 +25,6 @@ trait PreparesModels
                     $value = $value->format($format);
                 }
 
-                // When $value is a JSON string, we need to decode it.
-                if (Json::isJson($value)) {
-                    $value = json_decode((string) $value, true);
-                }
-
                 return [$field->handle() => $value];
             })
             ->toArray();

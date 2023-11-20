@@ -1,11 +1,9 @@
 @extends('statamic::layout')
-@section('title', __('Edit :resource', [
-    'resource' => $resource->singular(),
-]))
+@section('title', $title)
 @section('wrapper_class', 'max-w-3xl')
 
 @section('content')
-    <runway-publish-form
+    <statamic-events-publish-form
         :breadcrumbs="{{ $breadcrumbs->toJson() }}"
         :initial-blueprint='@json($blueprint)'
         :initial-meta='@json($meta)'
@@ -13,20 +11,9 @@
         initial-title="{{ $title }}"
         action="{{ $action }}"
         method="{{ $method }}"
-        :resource-has-routes="{{ $resourceHasRoutes ? 'true' : 'false' }}"
-        permalink="{{ $permalink }}"
         :is-creating="false"
         publish-container="base"
-        :read-only="{{ $resource->readOnly() ? 'true' : 'false' }}"
-        :resource='@json($resource->toArray())'
-        create-another-url="{{ cp_route('runway.create', ['resource' => $resource->handle()]) }}"
-        listing-url="{{ cp_route('runway.index', ['resource' => $resource->handle()]) }}"
-    ></runway-publish-form>
-
-    <script>
-        window.Runway = {
-            currentRecord: @json($currentRecord),
-            currentResource: "{{ $resource->handle() }}",
-        }
-    </script>
+        create-another-url="{{ cp_route('statamic-events.create') }}"
+        listing-url="{{ cp_route('statamic-events.index') }}"
+    ></statamic-events-publish-form>
 @endsection
