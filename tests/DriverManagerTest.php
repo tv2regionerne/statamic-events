@@ -1,42 +1,33 @@
 <?php
 
-namespace Tv2regionerne\StatamicEvents\Tests;
-
+uses(\Tv2regionerne\StatamicEvents\Tests\TestCase::class);
 use Illuminate\Support\Collection;
 use Tv2regionerne\StatamicEvents\Drivers\AbstractDriver;
 use Tv2regionerne\StatamicEvents\Drivers\WebhookDriver;
 use Tv2regionerne\StatamicEvents\Facades\Drivers;
 
-class DriverManagerTest extends TestCase
-{
-    /** @test */
-    public function can_discover_and_get_all_drivers()
-    {
-        $all = Drivers::all();
 
-        $this->assertTrue($all instanceof Collection);
-        $this->assertCount(2, $all);
+test('can discover and get all drivers', function () {
+    $all = Drivers::all();
 
-        $this->assertTrue($all->first() instanceof AbstractDriver);
-    }
+    expect($all instanceof Collection)->toBeTrue();
+    expect($all)->toHaveCount(2);
 
-    /** @test */
-    public function can_register_a_new_driver()
-    {
-        Drivers::add('test_driver', WebhookDriver::class);
+    expect($all->first() instanceof AbstractDriver)->toBeTrue();
+});
 
-        $all = Drivers::all();
+test('can register a new driver', function () {
+    Drivers::add('test_driver', WebhookDriver::class);
 
-        $this->assertCount(3, $all);
-    }
+    $all = Drivers::all();
 
-    /** @test */
-    public function can_remove_an_existing_driver()
-    {
-        Drivers::remove('webhook');
+    expect($all)->toHaveCount(3);
+});
 
-        $all = Drivers::all();
+test('can remove an existing driver', function () {
+    Drivers::remove('webhook');
 
-        $this->assertCount(1, $all);
-    }
-}
+    $all = Drivers::all();
+
+    expect($all)->toHaveCount(1);
+});

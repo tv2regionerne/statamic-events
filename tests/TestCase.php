@@ -31,7 +31,7 @@ abstract class TestCase extends OrchestraTestCase
         $this->preventSavingStacheItemsToDisk();
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $this->deleteFakeStacheDirectory();
 

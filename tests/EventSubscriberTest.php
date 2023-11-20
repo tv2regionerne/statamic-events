@@ -1,71 +1,67 @@
 <?php
 
-namespace Tv2regionerne\StatamicEvents\Tests;
-
+uses(\Tv2regionerne\StatamicEvents\Tests\TestCase::class);
+use \Statamic\Facades\Entry;
+use \Statamic\Facades\Collection;
+use \Statamic\Facades\Blink;
 use Illuminate\Support\Facades\Event;
 use Statamic\Facades;
 use Tv2regionerne\StatamicEvents\Facades\Drivers;
 use Tv2regionerne\StatamicEvents\Models\Handler;
 
-class EventSubscriberTest extends TestCase
-{
-    /** @test */
-    public function it_intercepts_a_defined_event()
-    {
-        $handler = Handler::factory()->make();
-        $handler->event = 'Statamic\Events\EntrySaving';
-        $handler->driver = 'tester';
-        $handler->save();
 
-        // register the listener
-        Event::listen(
-            \Statamic\Events\EntrySaving::class,
-            [\Tv2regionerne\StatamicEvents\Listeners\EventSubscriber::class, 'handleEvent']
-        );
+it('intercepts a defined event', function () {
+    $handler = Handler::factory()->make();
+    $handler->event = 'Statamic\Events\EntrySaving';
+    $handler->driver = 'tester';
+    $handler->save();
 
-        Drivers::shouldReceive('all')
-            ->once()
-            ->andReturn(collect());
+    // register the listener
+    Event::listen(
+        \Statamic\Events\EntrySaving::class,
+        [\Tv2regionerne\StatamicEvents\Listeners\EventSubscriber::class, 'handleEvent']
+    );
 
-        Facades\Blink::forget('statamic-events::handlers::all');
+    Drivers::shouldReceive('all')
+        ->once()
+        ->andReturn(collect());
 
-        $collection = Facades\Collection::make('test');
-        $collection->save();
+    Facades\Blink::forget('statamic-events::handlers::all');
 
-        $entry = Facades\Entry::make();
-        $entry->collection($collection);
-        $entry->slug('test');
-        $entry->id('test');
-        $entry->save();
-    }
+    $collection = Facades\Collection::make('test');
+    $collection->save();
 
-    /** @test */
-    public function it_doesnt_intercept_an_undefined_event()
-    {
-        $handler = Handler::factory()->make();
-        $handler->event = 'Statamic\Events\TermSaved';
-        $handler->driver = 'tester';
-        $handler->save();
+    $entry = Facades\Entry::make();
+    $entry->collection($collection);
+    $entry->slug('test');
+    $entry->id('test');
+    $entry->save();
+});
 
-        // register the listener
-        Event::listen(
-            \Statamic\Events\EntrySaving::class,
-            [\Tv2regionerne\StatamicEvents\Listeners\EventSubscriber::class, 'handleEvent']
-        );
+it('doesnt intercept an undefined event', function () {
+    $handler = Handler::factory()->make();
+    $handler->event = 'Statamic\Events\TermSaved';
+    $handler->driver = 'tester';
+    $handler->save();
 
-        Drivers::shouldReceive('all')
-            ->never()
-            ->andReturn(collect());
+    // register the listener
+    Event::listen(
+        \Statamic\Events\EntrySaving::class,
+        [\Tv2regionerne\StatamicEvents\Listeners\EventSubscriber::class, 'handleEvent']
+    );
 
-        Facades\Blink::forget('statamic-events::handlers::all');
+    Drivers::shouldReceive('all')
+        ->never()
+        ->andReturn(collect());
 
-        $collection = Facades\Collection::make('test');
-        $collection->save();
+    Facades\Blink::forget('statamic-events::handlers::all');
 
-        $entry = Facades\Entry::make();
-        $entry->collection($collection);
-        $entry->slug('test');
-        $entry->id('test');
-        $entry->save();
-    }
-}
+    $collection = Facades\Collection::make('test');
+    $collection->save();
+
+    $entry = Facades\Entry::make();
+    $entry->collection($collection);
+    $entry->slug('test');
+    $entry->id('test');
+    $entry->save();
+});
