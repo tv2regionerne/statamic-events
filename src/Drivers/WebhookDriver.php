@@ -27,8 +27,7 @@ class WebhookDriver extends AbstractDriver
         }
         
         // authentication
-        // none basic, digest, token
-        // https://laravel.com/docs/10.x/http-client#authentication
+        // none, basic, digest, token
         switch ($config['authentication_type']) {
             case 'basic':
                 $request->withBasicAuth($config['authentication_user'], $config['authentication_password']);
