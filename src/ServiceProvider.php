@@ -21,7 +21,7 @@ class ServiceProvider extends AddonServiceProvider
     protected $subscribe = [
         EventSubscriber::class,
     ];
-    
+
     protected $vite = [
         'publicDirectory' => 'dist',
         'input' => [
@@ -29,32 +29,32 @@ class ServiceProvider extends AddonServiceProvider
         ],
     ];
 
-    public function bootAddon()
+    public function boot()
     {
         parent::boot();
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'statamic-events');
         $this->mergeConfigFrom(__DIR__.'/../config/statamic-events.php', 'statamic-events');
-        
+
         $this->publishes([
             __DIR__.'/../config/statamic-events.php' => config_path('statamic/statamic-events.php'),
         ], 'statamic-events-config');
-                
+
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-    
+
         $this->bootDrivers()
             ->bootPermissions()
             ->bootNavigation();
     }
-    
+
     private function bootDrivers()
     {
         collect(config('statamic-events.drivers', []))
             ->each(fn ($class, $handle) => Drivers::add($handle, $class));
-                
+
         return $this;
     }
-    
+
     private function bootNavigation()
     {
         Nav::extend(function ($nav) {
@@ -64,10 +64,10 @@ class ServiceProvider extends AddonServiceProvider
                 ->route('statamic-events.index')
                 ->can('view events');
         });
-                
+
         return $this;
     }
-    
+
     private function bootPermissions()
     {
         Permission::register('view statamic events', function ($permission) {
@@ -85,7 +85,7 @@ class ServiceProvider extends AddonServiceProvider
                         ]),
                 ]);
         })->group('Statamic Events');
-            
+
         return $this;
     }
 }
