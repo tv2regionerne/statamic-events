@@ -274,7 +274,7 @@ class WebhookDriver extends AbstractDriver
                                     'handle' => 'payload_content_type',
                                     'field' => [
                                         'display' => __('Content Type'),
-                                        'type' => 'input',
+                                        'type' => 'text',
                                         'validate' => [
                                             'required_if:payload'
                                         ]
