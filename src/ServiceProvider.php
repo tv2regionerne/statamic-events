@@ -7,6 +7,7 @@ use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
 use Tv2regionerne\StatamicEvents\Facades\Drivers;
 use Tv2regionerne\StatamicEvents\Listeners\EventSubscriber;
+use Tv2regionerne\StatamicEvents\Managers\DriverManager;
 
 class ServiceProvider extends AddonServiceProvider
 {
@@ -29,10 +30,8 @@ class ServiceProvider extends AddonServiceProvider
         ],
     ];
 
-    public function boot()
+    public function bootAddon()
     {
-        parent::boot();
-
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'statamic-events');
         $this->mergeConfigFrom(__DIR__.'/../config/statamic-events.php', 'statamic-events');
 

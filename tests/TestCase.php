@@ -4,6 +4,7 @@ namespace Tv2regionerne\StatamicEvents\Tests;
 
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Statamic\Extend\Manifest;
@@ -14,7 +15,7 @@ use Tv2regionerne\StatamicEvents\ServiceProvider;
 
 abstract class TestCase extends OrchestraTestCase
 {
-    use RefreshDatabase;
+    use PreventSavingStacheItemsToDisk, RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -26,6 +27,15 @@ abstract class TestCase extends OrchestraTestCase
 
         \Facades\Statamic\Version::shouldReceive('get')->andReturn('4.0.0-testing');
         $this->addToAssertionCount(-1); // Dont want to assert this
+
+        $this->preventSavingStacheItemsToDisk();
+    }
+
+    public function tearDown(): void
+    {
+        $this->deleteFakeStacheDirectory();
+
+        parent::tearDown();
     }
 
     protected function getPackageProviders($app)
@@ -47,12 +57,14 @@ abstract class TestCase extends OrchestraTestCase
     {
         parent::getEnvironmentSetUp($app);
 
-        $app->make(Manifest::class)->manifest['tv2regionerne/statamic-events'] = [
-            'id' => 'tv2regionerne/statamic-events',
-            'namespace' => 'Tv2regionerne\\StatamicEvents',
+        $app->make(Manifest::class)->manifest = [
+            'tv2regionerne/statamic-events' => [
+                'id' => 'tv2regionerne/statamic-events',
+                'namespace' => 'Tv2regionerne\\StatamicEvents',
+            ]
         ];
 
-        $app->make(Manifest::class)->build();
+       // $app->make(Manifest::class)->build();
     }
 
     protected function resolveApplicationConfiguration($app)
@@ -92,8 +104,10 @@ abstract class TestCase extends OrchestraTestCase
 
         $app['config']->set('app.debug', true);
 
-        Statamic::pushCpRoutes(function () {
-            Route::namespace()->group(__DIR__.'/../routes/cp.php');
-        });
+//         Statamic::pushCpRoutes(function () {
+//             Route::namespace()->group(__DIR__.'/../routes/cp.php');
+//         });
+//
+//         Event::subscribe(\Tv2regionerne\StatamicEvents\Listeners\EventSubscriber::class);
     }
 }

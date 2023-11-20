@@ -7,7 +7,7 @@ use Tv2regionerne\StatamicEvents\Drivers\AbstractDriver;
 use Tv2regionerne\StatamicEvents\Drivers\WebhookDriver;
 use Tv2regionerne\StatamicEvents\Facades\Drivers;
 
-class DriversTest extends TestCase
+class DriverManagerTest extends TestCase
 {
     /** @test */
     public function can_discover_and_get_all_drivers()
