@@ -9,18 +9,18 @@ class WebhookDriver extends AbstractDriver
 {
     public function handle(array $config, string $eventName, $event): void
     {
-        if (! $config['url']) {
+        if (! ($config['url'] ?? false)) {
             return;
         }
 
         $request = Http::async(($config['async'] ?? false) ? true : false);
 
         // headers
-        if (! is_array($config['headers'])) {
+        if (! is_array($config['headers'] ?? [])) {
             $config['headers'] = json_decode($config['headers'], true);
         }
 
-        $headers = collect($config['headers'])->mapWithKeys(fn ($row) => [$row['key'] => $row['value']]);
+        $headers = collect($config['headers'] ?? [])->mapWithKeys(fn ($row) => [$row['key'] => $row['value']]);
 
         if ($headers->count()) {
             $request->withHeaders($headers->all());
@@ -28,7 +28,7 @@ class WebhookDriver extends AbstractDriver
 
         // authentication
         // none, basic, digest, token
-        switch ($config['authentication_type']) {
+        switch ($config['authentication_type'] ?? 'none') {
             case 'basic':
                 $request->withBasicAuth($config['authentication_user'], $config['authentication_password']);
             break;
@@ -43,20 +43,20 @@ class WebhookDriver extends AbstractDriver
         }
 
         // timeout
-        if ($timeout = $config['timeout']) {
+        if ($timeout = ($config['timeout'] ?? false)) {
             $request->timeout($timeout);
         }
 
         // retries
-        if ($retries = $config['retry_count']) {
+        if ($retries = ($config['retry_count'] ?? false)) {
             $request->retry($retries, $config['retry_wait']);
         }
 
         // payload?
-        if ($config['payload']) {
+        if ($payload = ($config['payload'] ?? false)) {
 
             if ($config['payload_antlers_parse'] ?? false) {
-                $payload = Antlers::parse($config['payload'], array_merge([
+                $payload = Antlers::parse($payload, array_merge([
                         'trigger_event' => $event,
                     ], $data));
             }
@@ -72,7 +72,7 @@ class WebhookDriver extends AbstractDriver
         $response = $request->{$config['method']}($config['url']);
 
         // if we have a response handler class specified then hand off to it
-        if (($class = $config['response_handler']) && class_exists($class)) {
+        if (($class = ($config['response_handler'] ?? false)) && class_exists($class)) {
             (new $class())->handle($config, $eventName, $event, $response);
         }
     }
