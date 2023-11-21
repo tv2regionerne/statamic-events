@@ -62,3 +62,31 @@ it('doesnt intercept an undefined event', function () {
     $entry->id('test');
     $entry->save();
 });
+
+it('intercepts a defined event when disabled', function () {
+    $handler = Handler::factory()->make();
+    $handler->event = 'Statamic\Events\EntrySaving';
+    $handler->driver = 'tester';
+    $handler->enabled = false;
+    $handler->save();
+
+    // register the listener
+    Event::listen(
+        \Statamic\Events\EntrySaving::class,
+        [\Tv2regionerne\StatamicEvents\Listeners\EventSubscriber::class, 'handleEvent']
+    );
+
+    Drivers::shouldReceive('all')
+        ->never();
+
+    Facades\Blink::forget('statamic-events::handlers::all');
+
+    $collection = Facades\Collection::make('test');
+    $collection->save();
+
+    $entry = Facades\Entry::make();
+    $entry->collection($collection);
+    $entry->slug('test');
+    $entry->id('test');
+    $entry->save();
+});

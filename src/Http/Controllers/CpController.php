@@ -261,7 +261,16 @@ class CpController extends StatamicController
                     'listable' => 'listable',
                     'required' => true,
                 ],
-            ], 'main', true);
+            ], 'main', true)
+            ->ensureFieldsInTab([
+                'enabled' => [
+                    'display' => __('Enabled'),
+                    'handle' => 'enabled',
+                    'type' => 'toggle',
+                    'listable' => 'listable',
+                    'required' => true,
+                ],
+            ], 'sidebar', true);
     }
 
     private function buildStatamicEventsList()

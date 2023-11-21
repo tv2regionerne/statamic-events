@@ -26,6 +26,7 @@ class HandlerFactory extends Factory
             'event' => $this->faker->name(),
             'driver' => 'audit',
             'config' => [],
+            'enabled' => true
         ];
     }
 }

@@ -37,6 +37,7 @@ test('can store record', function () {
         ->post(cp_route('statamic-events.store'), [
             'title' => 'Testing handler',
             'event' => 'Some\\Event\\Name',
+            'enabled' => true,
             'driver' => 'audit',
             'level' => 'info',
             'message' => 'xxx',
@@ -82,6 +83,7 @@ test('can update resource', function () {
             'title' => 'Changed handler',
             'event' => 'Some\\Event\\Name',
             'driver' => 'audit',
+            'enabled' => true,
             'level' => 'info',
             'message' => 'xxx',
         ])

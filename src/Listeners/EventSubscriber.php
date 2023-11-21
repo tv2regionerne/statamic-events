@@ -32,6 +32,7 @@ class EventSubscriber
 
         $this->getHandlers()
             ->where('event', $eventName)
+            ->where('enabled', true)
             ->each(function ($handler) use ($eventName, $event) {
                 if ($driver = Drivers::all()->get($handler->driver)) {
                     $driver->handle($handler->config, $eventName, $event);
