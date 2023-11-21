@@ -281,7 +281,7 @@ class WebhookDriver extends AbstractDriver
                                         'display' => __('Content Type'),
                                         'type' => 'text',
                                         'validate' => [
-                                            'required_if:payload'
+                                            'required_with:payload'
                                         ]
                                     ],
                                 ],

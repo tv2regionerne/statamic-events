@@ -3,6 +3,8 @@
 namespace Tv2regionerne\StatamicEvents\Http\Controllers;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Statamic\CP\Breadcrumbs;
 use Statamic\Exceptions\NotFoundHttpException;
 use Statamic\Facades\Scope;
@@ -246,9 +248,11 @@ class CpController extends StatamicController
                 'event' => [
                     'display' => __('Event'),
                     'handle' => 'event',
-                    'type' => 'text',
+                    'type' => 'select',
                     'listable' => 'listable',
-                    'required' => true
+                    'required' => true,
+                    'taggable' => true,
+                    'options' => $this->buildStatamicEventsList(),
                 ],
                 'title' => [
                     'display' => __('Title'),
@@ -258,6 +262,19 @@ class CpController extends StatamicController
                     'required' => true,
                 ],
             ], 'main', true);
+    }
+
+    private function buildStatamicEventsList()
+    {
+        // we cache this on the assumption a new deploy of statamic will require a cache clear
+        // so this is refreshed
+        return Cache::remember('statamic-events::statamic-event-list', 1000000000, function() {
+            return collect(glob(base_path('vendor/statamic/cms/src/Events/*.php')))
+                ->mapWithKeys(function ($file) {
+                    return ['Statamic\\'.Str::of($file)->after('/src/')->before('.php')->replace('/', '\\') => Str::of($file)->after('/Events/')->before('.php')];
+                })
+                ->all();
+        });
     }
 
     private function ensureAllListableFields($blueprint)

@@ -7,7 +7,6 @@ use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
 use Tv2regionerne\StatamicEvents\Facades\Drivers;
 use Tv2regionerne\StatamicEvents\Listeners\EventSubscriber;
-use Tv2regionerne\StatamicEvents\Managers\DriverManager;
 
 class ServiceProvider extends AddonServiceProvider
 {
