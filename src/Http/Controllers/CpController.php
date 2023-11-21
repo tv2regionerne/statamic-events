@@ -102,7 +102,7 @@ class CpController extends StatamicController
             $driver = $drivers->keys()->first();
         }
 
-        $blueprint = $this->blueprint();
+        $blueprint = $this->blueprint($drivers->get($driver)->blueprintFields());
         $fields = $blueprint->fields();
         $fields = $fields->preProcess();
 
@@ -135,7 +135,15 @@ class CpController extends StatamicController
 
     public function store(StoreRequest $request)
     {
-        $blueprint = $this->blueprint();
+        $drivers = Drivers::all();
+
+        $driver = ($handle = $request->input('blueprint')) ? ($drivers->get($handle) ? $handle : false) : false;
+
+        if (! $driver) {
+            $driver = $drivers->keys()->first();
+        }
+
+        $blueprint = $this->blueprint($drivers->get($driver)->blueprintFields());
 
         $blueprint
             ->fields()
