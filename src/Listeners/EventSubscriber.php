@@ -5,6 +5,7 @@ namespace Tv2regionerne\StatamicEvents\Listeners;
 use Illuminate\Events\Dispatcher;
 use Statamic\Facades\Blink;
 use Tv2regionerne\StatamicEvents\Facades\Drivers;
+use Tv2regionerne\StatamicEvents\Jobs\RunHandler;
 use Tv2regionerne\StatamicEvents\Models\Handler;
 
 class EventSubscriber
@@ -35,6 +36,13 @@ class EventSubscriber
             ->where('enabled', true)
             ->each(function ($handler) use ($eventName, $event) {
                 if ($driver = Drivers::all()->get($handler->driver)) {
+                    if ($handler->should_queue) {
+                        RunHandler::dispatch($driver, $handler->config, $eventName, $event)
+                            ->onQueue(config('statamic-events.queue_name', 'default'));
+
+                        return;
+                    }
+
                     $driver->handle($handler->config, $eventName, $event);
                 }
             });

@@ -26,6 +26,11 @@ trait PreparesModels
                     $value = $value->format($format);
                 }
 
+                // it makes more sense in the db to have should_queue, but in the UI 'blocking'
+                if ($field->handle() == 'should_queue') {
+                    $value = ! $value;
+                }
+
                 return [$field->handle() => $value];
             })
             ->toArray();
@@ -55,6 +60,9 @@ trait PreparesModels
             });
 
         $model->config = $config;
+
+        // it makes more sense in the db to have should_queue, but in the UI 'blocking'
+        $model->should_queue = ! $model->should_queue;
     }
 
     protected function shouldSaveField(Field $field): bool

@@ -3,7 +3,6 @@
 use Tv2regionerne\StatamicEvents\Drivers;
 
 return [
-
     'drivers' => [
         'audit' => [
             'driver' => Drivers\AuditDriver::class,
@@ -20,4 +19,5 @@ return [
         ],
     ],
 
+    'queue_name' => 'default',
 ];

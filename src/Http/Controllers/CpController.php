@@ -278,6 +278,14 @@ class CpController extends StatamicController
                     'listable' => 'listable',
                     'required' => true,
                 ],
+                'should_queue' => [
+                    'display' => __('Blocking'),
+                    'handle' => 'enabled',
+                    'type' => 'toggle',
+                    'listable' => 'listable',
+                    'required' => true,
+                    'default' => true,
+                ],
             ], 'sidebar', true);
     }
 

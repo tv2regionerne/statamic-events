@@ -56,6 +56,10 @@ class HandlerCollection extends LaravelResourceCollection
                     $key = str_replace('->', '.', $fieldHandle);
 
                     $row[$fieldHandle] = $field->setValue(data_get($record, $key))->preProcessIndex()->value();
+
+                    if ($fieldHandle == 'should_queue') {
+                        $row[$fieldHandle] = ! $row[$fieldHandle];
+                    }
                 }
 
                 $row['driver'] = Drivers::all()->get($row['driver'])?->title();
