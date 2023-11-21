@@ -2,6 +2,7 @@
 
 namespace Tv2regionerne\StatamicEvents\Managers;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
 class DriverManager
@@ -16,17 +17,22 @@ class DriverManager
         $this->drivers = collect();
     }
 
-    public function add(string $handle, string $classname): self
+    public function add(string $handle, array $config): self
     {
-        $this->drivers->put($handle, $classname);
+        if (($driver = Arr::get($config, 'driver')) && class_exists($driver)) {
+            $this->drivers->put($handle, $config);
+        }
 
         return $this;
     }
 
     public function all(): Collection
     {
-        return collect($this->drivers)->map(function ($class) {
-            return app($class);
+        return collect($this->drivers)->map(function ($config) {
+            $driver = $config['driver'];
+            unset($config['driver']);
+
+            return app($driver)->withConfig($config);
         });
     }
 

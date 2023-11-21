@@ -116,7 +116,7 @@ class WebhookDriver extends AbstractDriver
                                 'async' => [
                                     'handle' => 'async',
                                     'field' => [
-                                        'display' => __('Blocking'),
+                                        'display' => __('Async'),
                                         'type' => 'toggle',
                                         'width' => 25,
                                     ],
@@ -162,7 +162,7 @@ class WebhookDriver extends AbstractDriver
                                         'listable' => 'hidden',
                                         'options' => array_merge([
                                             'none' => __('None'),
-                                        ], collect(config('statamic-events.response_handlers'))->mapWithKeys(fn ($handler, $key) => [$key => $key])->all()),
+                                        ], collect($this->get('response_handlers', []))->mapWithKeys(fn ($handler, $key) => [$key => $key])->all()),
                                         'default' => 'none',
                                     ],
                                 ],

@@ -17,7 +17,7 @@ test('can discover and get all drivers', function () {
 });
 
 test('can register a new driver', function () {
-    Drivers::add('test_driver', WebhookDriver::class);
+    Drivers::add('test_driver', ['driver' => WebhookDriver::class]);
 
     $all = Drivers::all();
 
@@ -30,4 +30,12 @@ test('can remove an existing driver', function () {
     $all = Drivers::all();
 
     expect($all)->toHaveCount(1);
+});
+
+test('can add config for a driver', function () {
+    Drivers::add('test_driver', ['driver' => WebhookDriver::class, 'some_config' => 1]);
+
+    $driver = Drivers::all()->get('test_driver');
+
+    expect($driver->get('some_config'))->toBe(1);
 });
