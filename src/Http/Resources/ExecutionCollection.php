@@ -7,7 +7,7 @@ use Statamic\Facades\Action;
 use Statamic\Facades\User;
 use Tv2regionerne\StatamicEvents\Facades\Drivers;
 
-class HandlerCollection extends LaravelResourceCollection
+class ExecutionCollection extends LaravelResourceCollection
 {
     public $collects;
 
@@ -55,19 +55,18 @@ class HandlerCollection extends LaravelResourceCollection
                 foreach ($this->blueprint->fields()->all() as $fieldHandle => $field) {
                     $key = str_replace('->', '.', $fieldHandle);
 
-                    $row[$fieldHandle] = $field->setValue(data_get($record, $key))->preProcessIndex()->value();
-
-                    if ($fieldHandle == 'should_queue') {
-                        $row[$fieldHandle] = ! $row[$fieldHandle];
+                    if ($fieldHandle == 'handler') {
+                        $row[$fieldHandle] = $record->handler->title;
+                        continue;
                     }
+
+                    $row[$fieldHandle] = $field->setValue(data_get($record, $key))->preProcessIndex()->value();
                 }
 
-                $row['driver'] = Drivers::all()->get($row['driver'])?->title();
-
                 $row['id'] = $record->getKey();
-                $row['edit_url'] = cp_route('statamic-events.handlers.edit', ['record' => $record->getRouteKey()]);
-                $row['permalink'] = null;
-                $row['editable'] = User::current()->can('edit statamic events');
+                $row['edit_url'] = null;
+                $row['permalink'] = cp_route('statamic-events.executions.show', ['record' => $record->getRouteKey()]);
+                $row['editable'] = false;
                 $row['viewable'] = User::current()->can('view statamic events');
                 $row['actions'] = Action::for($record);
 

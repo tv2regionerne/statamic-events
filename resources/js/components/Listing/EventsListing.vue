@@ -92,12 +92,12 @@
                     <div class="overflow-x-auto overflow-y-hidden">
                         <data-list-table
                             v-show="items.length"
-                            :allow-bulk-actions="true"
+                            :allow-bulk-actions="allowBulkActions"
                             :loading="loading"
                             :reorderable="false"
                             :sortable="true"
-                            :toggle-selection-on-row-click="true"
-                            :allow-column-picker="true"
+                            :toggle-selection-on-row-click="allowBulkActions"
+                            :allow-column-picker="allowColumnPicker"
                             :column-preferences-key="preferencesKey('columns')"
                             @sorted="sorted"
                         >
@@ -105,7 +105,7 @@
                                 :slot="primaryColumn"
                                 slot-scope="{ row, value }"
                             >
-                                <a :href="row.edit_url" @click.stop>{{
+                                <a :href="row.edit_url ?? row.permalink" @click.stop>{{
                                     value
                                 }}</a>
                             </template>
@@ -196,6 +196,8 @@ export default {
         initialColumns: Array,
         actionUrl: String,
         initialPrimaryColumn: String,
+        allowBulkActions: { type: Boolean, default: true },
+        allowColumnPicker: { type: Boolean, default: true },
     },
 
     data() {

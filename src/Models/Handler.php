@@ -23,4 +23,9 @@ class Handler extends Model
     {
         return $this->hasMany(Execution::class);
     }
+
+    public function scopeEnabled($query)
+    {
+        return $query->where('enabled', true);
+    }
 }

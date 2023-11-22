@@ -2,11 +2,12 @@
 
 namespace Tv2regionerne\StatamicEvents\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Spatie\Activitylog\Contracts\Activity;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Execution extends Model
 {
@@ -44,10 +45,13 @@ class Execution extends Model
            ->log($message);
     }
 
-    public function logs()
+    public function logs(): Builder
     {
-        return Activity::inLog('other-log')
-            ->wherePerformedOn($this);
+        $class = config('activitylog.activity_model');
+
+        return app($class)::inLog('statamic-events')
+            ->whereSubjectId($this->getKey())
+            ->whereSubjectType(get_class($this));
     }
 
     protected function input(): Attribute

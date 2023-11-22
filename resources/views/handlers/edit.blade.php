@@ -13,7 +13,7 @@
         method="{{ $method }}"
         :is-creating="false"
         publish-container="base"
-        create-another-url="{{ cp_route('statamic-events.create') }}"
-        listing-url="{{ cp_route('statamic-events.index') }}"
+        create-another-url="{{ cp_route('statamic-events.handlers.create') }}"
+        listing-url="{{ cp_route('statamic-events.handlers.index') }}"
     ></statamic-events-publish-form>
 @endsection

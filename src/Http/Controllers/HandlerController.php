@@ -23,7 +23,7 @@ use Tv2regionerne\StatamicEvents\Http\Resources\HandlerCollection;
 use Tv2regionerne\StatamicEvents\Models\Handler;
 use Tv2regionerne\StatamicEvents\Traits\PreparesModels;
 
-class CpController extends StatamicController
+class HandlerController extends StatamicController
 {
     use PreparesModels, QueriesFilters;
 
@@ -35,8 +35,8 @@ class CpController extends StatamicController
 
         $listingConfig = [
             'preferencesPrefix' => 'statamic-events',
-            'requestUrl' => cp_route('statamic-events.listing-api'),
-            'listingUrl' => cp_route('statamic-events.index'),
+            'requestUrl' => cp_route('statamic-events.handlers.listing-api'),
+            'listingUrl' => cp_route('statamic-events.handlers.index'),
         ];
 
         $columns = $blueprint->fields()->all()
@@ -44,8 +44,8 @@ class CpController extends StatamicController
             ->map->handle()
             ->values();
 
-        return view('statamic-events::index', [
-            'title' => __('Event Handlers'),
+        return view('statamic-events::handlers.index', [
+            'title' => __('Handlers'),
             'recordCount' => Handler::count(),
             'primaryColumn' => 'title',
             'columns' => $blueprint->columns()
@@ -54,8 +54,8 @@ class CpController extends StatamicController
                 ->values(),
             'filters' => Scope::filters('statamic-events'),
             'listingConfig' => $listingConfig,
-            'actionUrl' => cp_route('statamic-events.actions.run'),
-            'createUrl' => cp_route('statamic-events.create'),
+            'actionUrl' => cp_route('statamic-events.handlers.actions.run'),
+            'createUrl' => cp_route('statamic-events.handlers.create'),
             'drivers' => Drivers::all()
                 ->map(fn ($driver, $handle) => ['handle' => $handle, 'title' => $driver->title()])
                 ->values()
@@ -114,11 +114,11 @@ class CpController extends StatamicController
 
         $viewData = [
             'title' => __('Create :driver', ['driver' => $driverTitle]),
-            'action' => cp_route('statamic-events.store'),
+            'action' => cp_route('statamic-events.handlers.store'),
             'method' => 'POST',
             'breadcrumbs' => new Breadcrumbs([[
-                'text' => __('Event Handlers'),
-                'url' => cp_route('statamic-events.index'),
+                'text' => __('Handlers'),
+                'url' => cp_route('statamic-events.handlers.index'),
             ]]),
             'blueprint' => $blueprint->toPublishArray(),
             'values' => $fields->values(),
@@ -130,7 +130,7 @@ class CpController extends StatamicController
             return $viewData;
         }
 
-        return view('statamic-events::create', $viewData);
+        return view('statamic-events::handlers.create', $viewData);
     }
 
     public function store(StoreRequest $request)
@@ -159,7 +159,7 @@ class CpController extends StatamicController
 
         return [
             'data' => $this->getReturnData($model),
-            'redirect' => cp_route('statamic-events.edit', [
+            'redirect' => cp_route('statamic-events.handlers.edit', [
                 'record' => $model->getKey(),
             ]),
         ];
@@ -184,13 +184,13 @@ class CpController extends StatamicController
 
         $viewData = [
             'title' => __('Edit :driver', ['driver' => $record->title]),
-            'action' => cp_route('statamic-events.update', [
+            'action' => cp_route('statamic-events.handlers.update', [
                 'record' => $record->getKey(),
             ]),
             'method' => 'PATCH',
             'breadcrumbs' => new Breadcrumbs([[
-                'text' => __('Event Handlers'),
-                'url' => cp_route('statamic-events.index'),
+                'text' => __('Handlers'),
+                'url' => cp_route('statamic-events.handlers.index'),
             ]]),
             'blueprint' => $blueprint->toPublishArray(),
             'values' => $fields->values(),
@@ -206,7 +206,7 @@ class CpController extends StatamicController
             return $viewData;
         }
 
-        return view('statamic-events::edit', $viewData);
+        return view('statamic-events::handlers.edit', $viewData);
     }
 
     public function update(UpdateRequest $request, $record)
@@ -233,7 +233,7 @@ class CpController extends StatamicController
     {
         return array_merge($record->toArray(), [
             'title' => $record->title,
-            'edit_url' => cp_route('statamic-events.edit', [
+            'edit_url' => cp_route('statamic-events.handlers.edit', [
                 'record' => $record->getKey(),
             ]),
         ]);

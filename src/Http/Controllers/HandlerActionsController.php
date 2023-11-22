@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Statamic\Http\Controllers\CP\ActionController;
 use Tv2regionerne\StatamicEvents\Models\Handler;
 
-class CpActionsController extends ActionController
+class HandlerActionsController extends ActionController
 {
     public function runAction(Request $request)
     {

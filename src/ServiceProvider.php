@@ -18,6 +18,11 @@ class ServiceProvider extends AddonServiceProvider
         'cp' => __DIR__.'/../routes/cp.php',
     ];
 
+    protected $scopes = [
+        Scopes\Date::class,
+        Scopes\Handler::class,
+    ];
+
     protected $subscribe = [
         EventSubscriber::class,
     ];
@@ -56,12 +61,17 @@ class ServiceProvider extends AddonServiceProvider
     private function bootNavigation()
     {
         Nav::extend(function ($nav) {
-            $nav->create(__('Event Handlers'))
-                ->section(__('Utilities'))
+            $nav->create(__('Handlers'))
+                ->section(__('Statamic Events'))
                 ->icon('time')
-                ->route('statamic-events.index')
-                ->can('view events');
+                ->route('statamic-events.handlers.index');
+
+            $nav->create(__('Executions'))
+                ->section(__('Statamic Events'))
+                ->icon('code')
+                ->route('statamic-events.executions.index');
         });
+
 
         return $this;
     }
