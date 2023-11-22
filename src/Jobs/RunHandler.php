@@ -12,12 +12,14 @@ class RunHandler implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public function __construct(public $driver, public $config, public $eventName, public $event)
+    public function __construct(public $driver, public $config, public $eventName, public $event, public $execution)
     {
     }
 
     public function handle()
     {
-        $this->driver->handle($this->config, $this->eventName, $this->event);
+        $this->execution->log(__('Processing'));
+
+        $this->driver->handle($this->config, $this->eventName, $this->event, $this->execution);
     }
 }

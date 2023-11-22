@@ -3,12 +3,13 @@
 namespace Tv2regionerne\StatamicEvents\Drivers;
 
 use Illuminate\Support\Arr;
+use Tv2regionerne\StatamicEvents\Models\Execution;
 
 abstract class AbstractDriver
 {
     protected $config = [];
 
-    abstract public function handle(array $config, string $eventName, $event): void;
+    abstract public function handle(array $config, string $eventName, $event, Execution $execution): void;
 
     abstract public function blueprintFields(): array;
 

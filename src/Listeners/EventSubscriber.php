@@ -36,14 +36,24 @@ class EventSubscriber
             ->where('enabled', true)
             ->each(function ($handler) use ($eventName, $event) {
                 if ($driver = Drivers::all()->get($handler->driver)) {
+                    $execution = $handler->executions()->create([
+                        'event' => $eventName,
+                        'input' => $event,
+                        'status' => 'processing',
+                    ]);
+
                     if ($handler->should_queue) {
-                        RunHandler::dispatch($driver, $handler->config, $eventName, $event)
+                        $execution->log(__('Added to queue'));
+
+                        RunHandler::dispatch($driver, $handler->config, $eventName, $event, $execution)
                             ->onQueue(config('statamic-events.queue_name', 'default'));
 
                         return;
                     }
 
-                    $driver->handle($handler->config, $eventName, $event);
+                    $execution->log(__('Processing'));
+
+                    $driver->handle($handler->config, $eventName, $event, $execution);
                 }
             });
     }

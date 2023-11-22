@@ -4,16 +4,27 @@ namespace Tv2regionerne\StatamicEvents\Drivers;
 
 use Illuminate\Support\Facades\Log;
 use Statamic\Facades\Antlers;
+use Tv2regionerne\StatamicEvents\Models\Execution;
 
 class AuditDriver extends AbstractDriver
 {
-    public function handle(array $config, string $eventName, $event): void
+    public function handle(array $config, string $eventName, $event, Execution $execution): void
     {
-        $message = Antlers::parse($config['message'], array_merge([
+        try {
+            $message = Antlers::parse($config['message'], array_merge([
                 'trigger_event' => $eventName,
             ], get_object_vars($event)));
 
-        Log::{$config['level'] ?? 'info'}((string) $message);
+            Log::{$config['level'] ?? 'info'}((string) $message);
+
+            $execution->log(__('Logged message: :message', ['message' => $message]), [
+                'level' => $config['level'],
+            ]);
+
+            $execution->complete();
+        } catch (\Throwable $e) {
+            $execution->fail($e->getMessage());
+        }
     }
 
     public function blueprintFields(): array

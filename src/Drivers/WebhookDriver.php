@@ -4,76 +4,94 @@ namespace Tv2regionerne\StatamicEvents\Drivers;
 
 use Illuminate\Support\Facades\Http;
 use Statamic\Facades\Antlers;
+use Tv2regionerne\StatamicEvents\Models\Execution;
 
 class WebhookDriver extends AbstractDriver
 {
-    public function handle(array $config, string $eventName, $event): void
+    public function handle(array $config, string $eventName, $event, Execution $execution): void
     {
-        if (! ($config['url'] ?? false)) {
-            return;
-        }
-
-        $request = Http::async(($config['async'] ?? false) ? true : false);
-
-        // headers
-        if (! is_array($config['headers'] ?? [])) {
-            $config['headers'] = json_decode($config['headers'], true);
-        }
-
-        $headers = collect($config['headers'] ?? [])->mapWithKeys(fn ($row) => [$row['key'] => $row['value']]);
-
-        if ($headers->count()) {
-            $request->withHeaders($headers->all());
-        }
-
-        // authentication
-        // none, basic, digest, token
-        switch ($config['authentication_type'] ?? 'none') {
-            case 'basic':
-                $request->withBasicAuth($config['authentication_user'], $config['authentication_password']);
-            break;
-
-            case 'digest':
-                $request->withDigestAuth($config['authentication_user'], $config['authentication_password']);
-            break;
-
-            case 'token':
-                $request->withToken($config['authentication_token']);
-            break;
-        }
-
-        // timeout
-        if ($timeout = ($config['timeout'] ?? false)) {
-            $request->timeout($timeout);
-        }
-
-        // retries
-        if ($retries = ($config['retry_count'] ?? false)) {
-            $request->retry($retries, $config['retry_wait']);
-        }
-
-        // payload?
-        if ($payload = ($config['payload'] ?? false)) {
-
-            if ($config['payload_antlers_parse'] ?? false) {
-                $payload = Antlers::parse($payload, array_merge([
-                        'trigger_event' => $event,
-                    ], $data));
+        try {
+            if (! ($config['url'] ?? false)) {
+                throw new \Exception(__('No url specified in handler'));
             }
 
-            if ($config['payload_json_decode'] ?? false) {
-                $payload = json_decode($payload, true);
+            $request = Http::async(($config['async'] ?? false) ? true : false);
+
+            // headers
+            if (! is_array($config['headers'] ?? [])) {
+                $config['headers'] = json_decode($config['headers'], true);
             }
 
-            $request->withBody($payload, $config['payload_content_type']);
-        }
+            $headers = collect($config['headers'] ?? [])->mapWithKeys(fn ($row) => [$row['key'] => $row['value']]);
 
-        // run the request
-        $response = $request->{$config['method']}($config['url']);
+            if ($headers->count()) {
+                $request->withHeaders($headers->all());
+            }
 
-        // if we have a response handler class specified then hand off to it
-        if (($class = ($config['response_handler'] ?? false)) && class_exists($class)) {
-            (new $class())->handle($config, $eventName, $event, $response);
+            // authentication
+            // none, basic, digest, token
+            switch ($config['authentication_type'] ?? 'none') {
+                case 'basic':
+                    $request->withBasicAuth($config['authentication_user'], $config['authentication_password']);
+                break;
+
+                case 'digest':
+                    $request->withDigestAuth($config['authentication_user'], $config['authentication_password']);
+                break;
+
+                case 'token':
+                    $request->withToken($config['authentication_token']);
+                break;
+            }
+
+            // timeout
+            if ($timeout = ($config['timeout'] ?? false)) {
+                $request->timeout($timeout);
+            }
+
+            // retries
+            if ($retries = ($config['retry_count'] ?? false)) {
+                $request->retry($retries, $config['retry_wait']);
+            }
+
+            // payload?
+            if ($payload = ($config['payload'] ?? false)) {
+
+                if ($config['payload_antlers_parse'] ?? false) {
+                    $payload = Antlers::parse($payload, array_merge([
+                            'trigger_event' => $event,
+                        ], $data));
+                }
+
+                if ($config['payload_json_decode'] ?? false) {
+                    $payload = json_decode($payload, true);
+                }
+
+                $request->withBody($payload, $config['payload_content_type']);
+            }
+
+            $execution->log(__('Sending request to :url', ['url' => $config['url']]));
+
+            // run the request
+            $response = $request->{$config['method']}($config['url']);
+
+            $execution->log(__('Response received'), [
+                'response' => $response->getBody(),
+            ]);
+
+            // if we have a response handler class specified then hand off to it
+            if (($class = ($config['response_handler'] ?? false)) && class_exists($class)) {
+                $execution->log(__('Passing response to handler: :class', ['class' => $class]));
+
+                $response = (new $class())->handle($config, $eventName, $event, $response);
+
+                $execution->log(__('Received response from handler'));
+            }
+
+            $execution->complete($response->getBody());
+
+        } catch (\Throwable $e) {
+            $execution->fail($e->getMessage());
         }
     }
 

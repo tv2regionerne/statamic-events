@@ -5,6 +5,7 @@ namespace Tv2regionerne\StatamicEvents\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Handler extends Model
 {
@@ -17,4 +18,9 @@ class Handler extends Model
         'enabled' => 'boolean',
         'should_queue' => 'boolean',
     ];
+
+    public function executions(): HasMany
+    {
+        return $this->hasMany(Execution::class);
+    }
 }
