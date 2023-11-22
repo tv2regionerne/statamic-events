@@ -3,7 +3,7 @@
 namespace Database\Factories\Tv2regionerne\StatamicEvents\Models;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Tv2regionerne\StatamicEvents\Models\Handler;
+use Tv2regionerne\StatamicEvents\Models\Execution;
 
 class ExecutionFactory extends Factory
 {

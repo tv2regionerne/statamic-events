@@ -25,6 +25,8 @@ abstract class TestCase extends OrchestraTestCase
 
         $this->runLaravelMigrations();
 
+        $this->loadMigrationsFrom(__DIR__."/../vendor/spatie/laravel-activitylog/database/migrations");
+
         \Facades\Statamic\Version::shouldReceive('get')->andReturn('4.0.0-testing');
         $this->addToAssertionCount(-1); // Dont want to assert this
 
@@ -103,6 +105,11 @@ abstract class TestCase extends OrchestraTestCase
         $app['config']->set('statamic-events', require(__DIR__.'/../config/statamic-events.php'));
 
         $app['config']->set('app.debug', true);
+
+        $app['config']->set(
+            "activitylog",
+            require(__DIR__."/../vendor/spatie/laravel-activitylog/config/activitylog.php")
+        );
 
 //         Statamic::pushCpRoutes(function () {
 //             Route::namespace()->group(__DIR__.'/../routes/cp.php');

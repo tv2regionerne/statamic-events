@@ -1,7 +1,6 @@
 <?php
 
 uses(\Tv2regionerne\StatamicEvents\Tests\TestCase::class);
-use Statamic\Facades\Config;
 use Statamic\Facades\User;
 use Tv2regionerne\StatamicEvents\Models\Handler;
 
