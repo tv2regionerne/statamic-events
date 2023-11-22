@@ -39,6 +39,10 @@ class Execution extends Model
 
     public function log(string $message, array $extra = [])
     {
+        if (! auth()->user()) {
+            return;
+        }
+
         return activity('statamic-events')
            ->performedOn($this)
            ->withProperties($extra)

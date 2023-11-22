@@ -11,9 +11,9 @@ test('get model index', function () {
 
     $response = $this
         ->actingAs($user)
-        ->get(cp_route('statamic-events.index'))
+        ->get(cp_route('statamic-events.handlers.index'))
         ->assertOk()
-        ->assertViewIs('statamic-events::index')
+        ->assertViewIs('statamic-events::handlers.index')
         ->assertSee([
             'listing-config',
             'columns',
@@ -25,18 +25,19 @@ test('can create record', function () {
 
     $this
         ->actingAs($user)
-        ->get(cp_route('statamic-events.create'))
+        ->get(cp_route('statamic-events.handlers.create'))
         ->assertOk();
 });
 
 test('can store record', function () {
     $user = User::make()->makeSuper()->save();
 
-    $this
+    $response = $this
         ->actingAs($user)
-        ->post(cp_route('statamic-events.store'), [
+        ->post(cp_route('statamic-events.handlers.store'), [
             'title' => 'Testing handler',
             'event' => 'Some\\Event\\Name',
+            'should_queue' => false,
             'enabled' => true,
             'driver' => 'audit',
             'level' => 'info',
@@ -58,7 +59,7 @@ test('can edit record', function () {
 
     $this
         ->actingAs($user)
-        ->get(cp_route('statamic-events.edit', ['record' => $handler->id]))
+        ->get(cp_route('statamic-events.handlers.edit', ['record' => $handler->id]))
         ->assertOk()
         ->assertSee($handler->title);
 });
@@ -68,7 +69,7 @@ test('cant edit record when it does not exist', function () {
 
     $this
         ->actingAs($user)
-        ->get(cp_route('statamic-events.edit', ['record' => 12345]))
+        ->get(cp_route('statamic-events.handlers.edit', ['record' => 12345]))
         ->assertNotFound()
         ->assertSee('Page Not Found');
 });
@@ -79,10 +80,11 @@ test('can update resource', function () {
 
     $this
         ->actingAs($user)
-        ->patch(cp_route('statamic-events.update', ['record' => $handler->id]), [
+        ->patch(cp_route('statamic-events.handlers.update', ['record' => $handler->id]), [
             'title' => 'Changed handler',
             'event' => 'Some\\Event\\Name',
             'driver' => 'audit',
+            'should_queue' => false,
             'enabled' => true,
             'level' => 'info',
             'message' => 'xxx',
