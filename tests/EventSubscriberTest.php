@@ -153,3 +153,36 @@ it('doesnt queue a defined event', function () {
 
     Queue::assertNotPushed(RunHandler::class);
 });
+
+it('logs an execution', function () {
+    $handler = Handler::factory()->make();
+    $handler->event = 'Statamic\Events\EntrySaving';
+    $handler->driver = 'webhook';
+    $handler->should_queue = false;
+    $handler->save();
+
+    expect($handler->executions)->toHaveCount(0);
+
+    // register the listener
+    Event::listen(
+        \Statamic\Events\EntrySaving::class,
+        [\Tv2regionerne\StatamicEvents\Listeners\EventSubscriber::class, 'handleEvent']
+    );
+
+    Queue::fake();
+
+    Facades\Blink::forget('statamic-events::handlers::all');
+
+    $collection = Facades\Collection::make('test');
+    $collection->save();
+
+    $entry = Facades\Entry::make();
+    $entry->collection($collection);
+    $entry->slug('test');
+    $entry->id('test');
+    $entry->save();
+
+    Queue::assertNotPushed(RunHandler::class);
+
+    expect($handler->executions)->toHaveCount(0);
+});
