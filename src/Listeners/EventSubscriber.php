@@ -2,54 +2,70 @@
 
 namespace Tv2regionerne\StatamicEvents\Listeners;
 
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Http;
-use Statamic\Eloquent\Entries\Entry;
+use Illuminate\Events\Dispatcher;
+use Statamic\Facades\Blink;
+use Tv2regionerne\StatamicEvents\Facades\Drivers;
+use Tv2regionerne\StatamicEvents\Jobs\RunHandler;
+use Tv2regionerne\StatamicEvents\Models\Handler;
 
 class EventSubscriber
 {
-
-    /**
-     * Create the event listener.
-     */
-    public function __construct()
+    public function subscribe(Dispatcher $dispatcher)
     {
-
-    }
-
-    public function subscribe($dispatcher)
-    {
-        $dispatcher->listen('*', self::class.'@handleEvent');
-    }
-
-    public function handleEvent($event, $data)
-    {
-
-        if (!class_exists($event)) {
-            return;
-        }
-
-        if ($eventHandlers = data_get(config('statamic-events.events'), $event)) {
-            foreach ($eventHandlers as $eventHandler) {
-                switch ($eventHandler['type']) {
-                    case 'webhook':
-                        $entry = $data[0]->entry;
-                        $data = $this->callWebhook($eventHandler, $event, $data);
-                        $eventHandler['handler']($entry, $data);
-                        break;
+        // only listen for the events we actually need, to avoid memory or return value issues
+        return $this->getHandlers()
+            ->groupBy('event')
+            ->mapWithKeys(function ($handler, $event) use ($dispatcher) {
+                if (! class_exists($event)) {
+                    return [];
                 }
-            }
-        }
+
+                return [
+                    $event => 'handleEvent'
+                ];
+            })
+            ->all();
     }
 
-    public function callWebhook($eventHandler, $event, $data)
+    public function handleEvent($event)
     {
-        /** @var Entry $entry */
-        $entry = $data[0]->entry;
+        $eventName = get_class($event);
 
-        $input = $eventHandler['payload']($entry);
+        $this->getHandlers()
+            ->where('event', $eventName)
+            ->where('enabled', true)
+            ->each(function ($handler) use ($eventName, $event) {
+                if ($driver = Drivers::all()->get($handler->driver)) {
+                    $execution = $handler->executions()->create([
+                        'event' => $eventName,
+                        'input' => $event,
+                        'status' => 'processing',
+                    ]);
 
-        $repsonse = Http::post($eventHandler['endpoint'], $input);
-        return $repsonse->collect();
+                    if ($handler->should_queue) {
+                        $execution->log(__('Added to queue'));
+
+                        RunHandler::dispatch($driver, $handler->config, $eventName, $event, $execution)
+                            ->onQueue(config('statamic-events.queue_name', 'default'));
+
+                        return;
+                    }
+
+                    $execution->log(__('Processing'));
+
+                    $driver->handle($handler->config, $eventName, $event, $execution);
+                }
+            });
+    }
+
+    private function getHandlers()
+    {
+        return Blink::once('statamic-events::handlers::all', function () {
+            try {
+                return Handler::all();
+            } catch (\Throwable $e) {
+                return collect();
+            }
+        });
     }
 }

@@ -1,31 +1,23 @@
 <?php
 
-use Illuminate\Support\Facades\Http;
-use Statamic\Eloquent\Entries\Entry;
+use Tv2regionerne\StatamicEvents\Drivers;
 
 return [
-
-    'events' => [
-//        'Statamic\Events\EntrySaving' => [
-//            [
-//                'blocking' => true,
-//                'type' => 'webhook',
-//                'endpoint' => 'http://167.235.59.8/webhook/1a649b22-4db8-4571-9a89-b8f7492747b8',
-//                //'endpoint' => 'http://167.235.59.8/webhook-test/1a649b22-4db8-4571-9a89-b8f7492747b8',
-//                'payload' => function($entry) {
-//                    return [
-//                        'input' => json_encode($entry->get('content'))
-//                    ];
-//
-//                },
-//                'handler' => function($entry, $data) {
-//                    foreach ($data as $key => $value) {
-//                        dd($key, $value);
-//                        $entry->data($key, $value);
-//                    }
-//                }
-//            ]
-//        ]
+    'drivers' => [
+        'audit' => [
+            'driver' => Drivers\AuditDriver::class,
+            'response_handlers' => [
+                // define any response handlers
+                // e.g. 'my_handler' => App\ResponseHandlers\MyHandler::class
+                // they should have a handle method, which accepts 4 params
+                // handle(array $config, string $eventName, $event, Response $response)
+            ],
+        ],
+        'webhook' => [
+            'driver' => Drivers\WebhookDriver::class,
+            'response_handlers' => [],
+        ],
     ],
 
+    'queue_name' => 'default',
 ];
