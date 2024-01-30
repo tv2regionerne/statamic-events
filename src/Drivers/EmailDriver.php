@@ -174,6 +174,7 @@ class EmailDriver extends AbstractDriver
                                         'options' => collect(glob(base_path('App/Mail/*.php')))
                                             ->mapWithKeys(function ($file) {
                                                 $fqcn = $namespace.'\\'.Str::of($file)->after('/src/')->before('.php')->replace('/', '\\');
+
                                                 return [$fqcn => Str::of($file)->afterLast('/')->before('.php')];
                                             })
                                             ->all(),
