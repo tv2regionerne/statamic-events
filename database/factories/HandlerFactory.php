@@ -23,7 +23,7 @@ class HandlerFactory extends Factory
     {
         return [
             'title' => $this->faker->name(),
-            'event' => $this->faker->name(),
+            'events' => [$this->faker->name()],
             'driver' => 'audit',
             'config' => [],
             'enabled' => true,

@@ -137,7 +137,7 @@ class HandlerController extends StatamicController
     {
         $drivers = Drivers::all();
 
-        $driver = ($handle = $request->input('blueprint')) ? ($drivers->get($handle) ? $handle : false) : false;
+        $driver = ($handle = $request->input('driver')) ? ($drivers->get($handle) ? $handle : false) : false;
 
         if (! $driver) {
             $driver = $drivers->keys()->first();
@@ -172,7 +172,6 @@ class HandlerController extends StatamicController
         if (! $record) {
             throw new NotFoundHttpException();
         }
-
 
         $driver = Drivers::all()->get($record->driver) ?? Drivers::all()->first();
 
@@ -252,15 +251,17 @@ class HandlerController extends StatamicController
                     'handle' => 'driver',
                     'type' => 'hidden',
                     'listable' => 'listable',
+                    'default' => request()->input('blueprint') ?? '',
                 ],
-                'event' => [
-                    'display' => __('Event'),
-                    'handle' => 'event',
+                'events' => [
+                    'display' => __('Events'),
+                    'handle' => 'events',
                     'type' => 'select',
                     'listable' => 'listable',
                     'required' => true,
                     'taggable' => true,
-                    'options' => $this->buildStatamicEventsList(),
+                    'options' => $this->buildEventsList(),
+                    'multiple' => true,
                 ],
                 'title' => [
                     'display' => __('Title'),
@@ -276,27 +277,29 @@ class HandlerController extends StatamicController
                     'handle' => 'enabled',
                     'type' => 'toggle',
                     'listable' => 'listable',
-                    'required' => true,
+                    'default' => false,
                 ],
                 'should_queue' => [
                     'display' => __('Blocking'),
                     'handle' => 'enabled',
                     'type' => 'toggle',
                     'listable' => 'listable',
-                    'required' => true,
                     'default' => true,
                 ],
             ], 'sidebar', true);
     }
 
-    private function buildStatamicEventsList()
+    private function buildEventsList()
     {
-        // we cache this on the assumption a new deploy of statamic will require a cache clear
-        // so this is refreshed
-        return Cache::remember('statamic-events::statamic-event-list', 1000000000, function() {
-            return collect(glob(base_path('vendor/statamic/cms/src/Events/*.php')))
-                ->mapWithKeys(function ($file) {
-                    return ['Statamic\\'.Str::of($file)->after('/src/')->before('.php')->replace('/', '\\') => Str::of($file)->after('/Events/')->before('.php')];
+        return Cache::remember('statamic-events::event-list', 10000000, function() {
+            return collect(config('statamic-events.events'))
+                ->mapWithKeys(function ($folder, $namespace) {
+                    return collect(glob(base_path($folder.'/*.php')))
+                        ->mapWithKeys(function ($file) use ($namespace) {
+                            $fqcn = $namespace.'\\'.Str::of($file)->after('/src/')->before('.php')->replace('/', '\\');
+                            return [$fqcn => $fqcn];
+                        })
+                        ->all();
                 })
                 ->all();
         });

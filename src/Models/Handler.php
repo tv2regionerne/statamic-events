@@ -16,6 +16,7 @@ class Handler extends Model
     protected $casts = [
         'config' => 'array',
         'enabled' => 'boolean',
+        'events' => 'array',
         'should_queue' => 'boolean',
     ];
 

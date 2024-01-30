@@ -12,7 +12,7 @@ use Tv2regionerne\StatamicEvents\Models\Handler;
 
 it('intercepts a defined event', function () {
     $handler = Handler::factory()->make();
-    $handler->event = 'Statamic\Events\EntrySaving';
+    $handler->events = ['Statamic\Events\EntrySaving'];
     $handler->driver = 'tester';
     $handler->save();
 
@@ -40,7 +40,7 @@ it('intercepts a defined event', function () {
 
 it('doesnt intercept an undefined event', function () {
     $handler = Handler::factory()->make();
-    $handler->event = 'Statamic\Events\TermSaved';
+    $handler->events = ['Statamic\Events\TermSaved'];
     $handler->driver = 'tester';
     $handler->save();
 
@@ -68,7 +68,7 @@ it('doesnt intercept an undefined event', function () {
 
 it('intercepts a defined event when disabled', function () {
     $handler = Handler::factory()->make();
-    $handler->event = 'Statamic\Events\EntrySaving';
+    $handler->events = ['Statamic\Events\EntrySaving'];
     $handler->driver = 'tester';
     $handler->enabled = false;
     $handler->save();
@@ -96,7 +96,7 @@ it('intercepts a defined event when disabled', function () {
 
 it('queues a defined event', function () {
     $handler = Handler::factory()->make();
-    $handler->event = 'Statamic\Events\EntrySaving';
+    $handler->events = ['Statamic\Events\EntrySaving'];
     $handler->driver = 'webhook';
     $handler->should_queue = true;
     $handler->save();
@@ -127,7 +127,7 @@ it('queues a defined event', function () {
 
 it('doesnt queue a defined event', function () {
     $handler = Handler::factory()->make();
-    $handler->event = 'Statamic\Events\EntrySaving';
+    $handler->events = ['Statamic\Events\EntrySaving'];
     $handler->driver = 'webhook';
     $handler->should_queue = false;
     $handler->save();
@@ -156,7 +156,7 @@ it('doesnt queue a defined event', function () {
 
 it('logs an execution', function () {
     $handler = Handler::factory()->make();
-    $handler->event = 'Statamic\Events\EntrySaving';
+    $handler->events = ['Statamic\Events\EntrySaving'];
     $handler->driver = 'webhook';
     $handler->should_queue = false;
     $handler->save();

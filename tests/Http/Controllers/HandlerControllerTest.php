@@ -31,11 +31,11 @@ test('can create record', function () {
 test('can store record', function () {
     $user = User::make()->makeSuper()->save();
 
-    $response = $this
+    $this
         ->actingAs($user)
         ->post(cp_route('statamic-events.handlers.store'), [
             'title' => 'Testing handler',
-            'event' => 'Some\\Event\\Name',
+            'events' => ['Some\\Event\\Name'],
             'should_queue' => false,
             'enabled' => true,
             'driver' => 'audit',
@@ -81,7 +81,7 @@ test('can update resource', function () {
         ->actingAs($user)
         ->patch(cp_route('statamic-events.handlers.update', ['record' => $handler->id]), [
             'title' => 'Changed handler',
-            'event' => 'Some\\Event\\Name',
+            'events' => ['Some\\Event\\Name'],
             'driver' => 'audit',
             'should_queue' => false,
             'enabled' => true,

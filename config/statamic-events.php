@@ -19,5 +19,9 @@ return [
         ],
     ],
 
+    'events' => [
+        'Statamic' => 'vendor/statamic/cms/src/Events',
+    ],
+
     'queue_name' => 'default',
 ];

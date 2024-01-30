@@ -14,15 +14,18 @@ class EventSubscriber
     {
         // only listen for the events we actually need, to avoid memory or return value issues
         return $this->getHandlers()
-            ->groupBy('event')
-            ->mapWithKeys(function ($handler, $event) use ($dispatcher) {
-                if (! class_exists($event)) {
-                    return [];
-                }
+            ->mapWithKeys(function ($handler) use ($dispatcher) {
+                return collect($handler->events)
+                    ->mapWithKeys(function ($event) {
+                        if (! class_exists($event)) {
+                            return [];
+                        }
 
-                return [
-                    $event => 'handleEvent'
-                ];
+                        return [
+                            $event => 'handleEvent'
+                        ];
+                    })
+                    ->filter();
             })
             ->all();
     }
@@ -32,8 +35,7 @@ class EventSubscriber
         $eventName = get_class($event);
 
         $this->getHandlers()
-            ->where('event', $eventName)
-            ->where('enabled', true)
+            ->filter(fn ($handler) => in_array($eventName, $handler->events) && $handler->enabled)
             ->each(function ($handler) use ($eventName, $event) {
                 if ($driver = Drivers::all()->get($handler->driver)) {
                     $execution = $handler->executions()->create([

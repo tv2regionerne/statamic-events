@@ -8,7 +8,7 @@ use Tv2regionerne\StatamicEvents\Models\Handler;
 
 it('logs a message', function () {
     $handler = Handler::factory()->make();
-    $handler->event = 'Statamic\Events\EntrySaving';
+    $handler->events = ['Statamic\Events\EntrySaving'];
     $handler->driver = 'audit';
     $handler->config = [
         'level' => 'info',
@@ -40,7 +40,7 @@ it('logs a message', function () {
 
 it('logs a message parsed with antlers', function () {
     $handler = Handler::factory()->make();
-    $handler->event = 'Statamic\Events\EntrySaving';
+    $handler->events = ['Statamic\Events\EntrySaving'];
     $handler->driver = 'audit';
     $handler->config = [
         'level' => 'info',
@@ -72,7 +72,7 @@ it('logs a message parsed with antlers', function () {
 
 it('logs a warning message', function () {
     $handler = Handler::factory()->make();
-    $handler->event = 'Statamic\Events\EntrySaving';
+    $handler->events = ['Statamic\Events\EntrySaving'];
     $handler->driver = 'audit';
     $handler->config = [
         'level' => 'warning',
