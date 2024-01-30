@@ -56,7 +56,7 @@ class ExecutionCollection extends LaravelResourceCollection
                     $key = str_replace('->', '.', $fieldHandle);
 
                     if ($fieldHandle == 'handler') {
-                        $row[$fieldHandle] = $record->handler->title;
+                        $row[$fieldHandle] = $record->handler?->title;
                         continue;
                     }
 

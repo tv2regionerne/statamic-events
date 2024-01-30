@@ -10,8 +10,6 @@ use Statamic\Fields\Field;
 use Statamic\Http\Controllers\CP\CpController as StatamicController;
 use Statamic\Http\Requests\FilteredRequest;
 use Statamic\Query\Scopes\Filters\Concerns\QueriesFilters;
-use Tv2regionerne\StatamicEvents\Facades\Drivers;
-use Tv2regionerne\StatamicEvents\Http\Requests\CreateRequest;
 use Tv2regionerne\StatamicEvents\Http\Requests\EditRequest;
 use Tv2regionerne\StatamicEvents\Http\Requests\IndexRequest;
 use Tv2regionerne\StatamicEvents\Http\Resources\ExecutionCollection;
