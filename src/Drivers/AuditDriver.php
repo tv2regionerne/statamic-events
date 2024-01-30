@@ -15,7 +15,11 @@ class AuditDriver extends AbstractDriver
                 'trigger_event' => $eventName,
             ], get_object_vars($event)));
 
-            Log::channel($config['channel'] ?? null)->{$config['level'] ?? 'info'}((string) $message);
+            if ($channel = $config['channel'] ?? null) {
+                Log::channel($config['channel'] ?? null)->{$config['level'] ?? 'info'}((string) $message);
+            } else {
+                Log::{$config['level'] ?? 'info'}((string) $message);
+            }
 
             $execution->log(__('Logged message: :message', ['message' => $message]), [
                 'level' => $config['level'],
@@ -44,7 +48,7 @@ class AuditDriver extends AbstractDriver
                 'field' => [
                     'display' => __('Channel'),
                     'type' => 'select',
-                    'required' => true,
+                    'required' => false,
                     'listable' => 'hidden',
                     'options' => collect(config('logging.channels'))->sortKeys()->keys()->all(),
                 ],
