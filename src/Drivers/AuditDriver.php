@@ -15,7 +15,7 @@ class AuditDriver extends AbstractDriver
                 'trigger_event' => $eventName,
             ], get_object_vars($event)));
 
-            Log::{$config['level'] ?? 'info'}((string) $message);
+            Log::channel($config['channel'] ?? null)->{$config['level'] ?? 'info'}((string) $message);
 
             $execution->log(__('Logged message: :message', ['message' => $message]), [
                 'level' => $config['level'],
@@ -39,6 +39,16 @@ class AuditDriver extends AbstractDriver
     public function blueprintFields(): array
     {
         return [
+            'channel' => [
+                'handle' => 'channel',
+                'field' => [
+                    'display' => __('Channel'),
+                    'type' => 'select',
+                    'required' => true,
+                    'listable' => 'hidden',
+                    'options' => collect(config('logging.channels'))->sortKeys()->keys()->all(),
+                ],
+            ],
             'level' => [
                 'handle' => 'level',
                 'field' => [
