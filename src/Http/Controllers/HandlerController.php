@@ -106,10 +106,6 @@ class HandlerController extends StatamicController
         $fields = $blueprint->fields();
         $fields = $fields->preProcess();
 
-        $fields = $fields->addValues([
-            'driver' => $driver
-        ]);
-
         $driverTitle = $drivers->get($driver)->title();
 
         $viewData = [
