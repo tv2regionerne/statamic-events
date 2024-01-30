@@ -107,7 +107,8 @@ class WebhookDriver extends AbstractDriver
                                     'handle' => 'url',
                                     'field' => [
                                         'display' => __('URL'),
-                                        'type' => 'link',
+                                        'type' => 'text',
+                                        'input_type' => 'url',
                                         'required' => true,
                                         'listable' => 'hidden',
                                         'width' => 50,
