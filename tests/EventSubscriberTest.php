@@ -9,7 +9,6 @@ use Tv2regionerne\StatamicEvents\Facades\Drivers;
 use Tv2regionerne\StatamicEvents\Jobs\RunHandler;
 use Tv2regionerne\StatamicEvents\Models\Handler;
 
-
 it('intercepts a defined event', function () {
     $handler = Handler::factory()->make();
     $handler->events = ['Statamic\Events\EntrySaving'];

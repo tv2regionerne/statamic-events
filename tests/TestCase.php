@@ -25,7 +25,7 @@ abstract class TestCase extends OrchestraTestCase
 
         $this->runLaravelMigrations();
 
-        $this->loadMigrationsFrom(__DIR__."/../vendor/spatie/laravel-activitylog/database/migrations");
+        $this->loadMigrationsFrom(__DIR__.'/../vendor/spatie/laravel-activitylog/database/migrations');
 
         \Facades\Statamic\Version::shouldReceive('get')->andReturn('4.0.0-testing');
         $this->addToAssertionCount(-1); // Dont want to assert this
@@ -63,10 +63,10 @@ abstract class TestCase extends OrchestraTestCase
             'tv2regionerne/statamic-events' => [
                 'id' => 'tv2regionerne/statamic-events',
                 'namespace' => 'Tv2regionerne\\StatamicEvents',
-            ]
+            ],
         ];
 
-       // $app->make(Manifest::class)->build();
+        // $app->make(Manifest::class)->build();
     }
 
     protected function resolveApplicationConfiguration($app)
@@ -107,14 +107,14 @@ abstract class TestCase extends OrchestraTestCase
         $app['config']->set('app.debug', true);
 
         $app['config']->set(
-            "activitylog",
-            require(__DIR__."/../vendor/spatie/laravel-activitylog/config/activitylog.php")
+            'activitylog',
+            require(__DIR__.'/../vendor/spatie/laravel-activitylog/config/activitylog.php')
         );
 
-//         Statamic::pushCpRoutes(function () {
-//             Route::namespace()->group(__DIR__.'/../routes/cp.php');
-//         });
-//
-//         Event::subscribe(\Tv2regionerne\StatamicEvents\Listeners\EventSubscriber::class);
+        //         Statamic::pushCpRoutes(function () {
+        //             Route::namespace()->group(__DIR__.'/../routes/cp.php');
+        //         });
+        //
+        //         Event::subscribe(\Tv2regionerne\StatamicEvents\Listeners\EventSubscriber::class);
     }
 }

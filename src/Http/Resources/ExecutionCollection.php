@@ -5,7 +5,6 @@ namespace Tv2regionerne\StatamicEvents\Http\Resources;
 use Illuminate\Http\Resources\Json\ResourceCollection as LaravelResourceCollection;
 use Statamic\Facades\Action;
 use Statamic\Facades\User;
-use Tv2regionerne\StatamicEvents\Facades\Drivers;
 
 class ExecutionCollection extends LaravelResourceCollection
 {
@@ -49,7 +48,7 @@ class ExecutionCollection extends LaravelResourceCollection
         $columns = $this->columns->pluck('field')->toArray();
 
         return [
-            'data' => $this->collection->map(function ($record) use ($columns) {
+            'data' => $this->collection->map(function ($record) {
                 $row = [];
 
                 foreach ($this->blueprint->fields()->all() as $fieldHandle => $field) {
@@ -57,6 +56,7 @@ class ExecutionCollection extends LaravelResourceCollection
 
                     if ($fieldHandle == 'handler') {
                         $row[$fieldHandle] = $record->handler?->title;
+
                         continue;
                     }
 

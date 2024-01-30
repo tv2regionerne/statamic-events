@@ -33,15 +33,15 @@ class WebhookDriver extends AbstractDriver
             switch ($config['authentication_type'] ?? 'none') {
                 case 'basic':
                     $request->withBasicAuth($config['authentication_user'], $config['authentication_password']);
-                break;
+                    break;
 
                 case 'digest':
                     $request->withDigestAuth($config['authentication_user'], $config['authentication_password']);
-                break;
+                    break;
 
                 case 'token':
                     $request->withToken($config['authentication_token']);
-                break;
+                    break;
             }
 
             // timeout
@@ -59,8 +59,8 @@ class WebhookDriver extends AbstractDriver
 
                 if ($config['payload_antlers_parse'] ?? false) {
                     $payload = Antlers::parse($payload, array_merge([
-                            'trigger_event' => $event,
-                        ], $data));
+                        'trigger_event' => $event,
+                    ], $data));
                 }
 
                 if ($config['payload_json_decode'] ?? false) {
@@ -240,7 +240,7 @@ class WebhookDriver extends AbstractDriver
                                         'display' => __('User'),
                                         'type' => 'text',
                                         'validate' => [
-                                            'required_unless:authentication_type,token,none'
+                                            'required_unless:authentication_type,token,none',
                                         ],
                                         'hide_when' => [
                                             'authentication_type' => 'contains_any token,none',
@@ -254,7 +254,7 @@ class WebhookDriver extends AbstractDriver
                                         'display' => __('Password'),
                                         'type' => 'text',
                                         'validate' => [
-                                            'required_unless:authentication_type,token,none'
+                                            'required_unless:authentication_type,token,none',
                                         ],
                                         'hide_when' => [
                                             'authentication_type' => 'contains_any token,none',
@@ -268,7 +268,7 @@ class WebhookDriver extends AbstractDriver
                                         'display' => __('Token'),
                                         'type' => 'text',
                                         'validate' => [
-                                            'required_if:authentication_type,token'
+                                            'required_if:authentication_type,token',
                                         ],
                                         'show_when_any' => [
                                             'authentication_type' => 'is token',
@@ -289,8 +289,8 @@ class WebhookDriver extends AbstractDriver
                                         'display' => __('Body'),
                                         'type' => 'textarea',
                                         'validate' => [
-                                            'required_unless:method,get,delete'
-                                        ]
+                                            'required_unless:method,get,delete',
+                                        ],
                                     ],
                                 ],
 
@@ -300,8 +300,8 @@ class WebhookDriver extends AbstractDriver
                                         'display' => __('Content Type'),
                                         'type' => 'text',
                                         'validate' => [
-                                            'required_with:payload'
-                                        ]
+                                            'required_with:payload',
+                                        ],
                                     ],
                                 ],
 

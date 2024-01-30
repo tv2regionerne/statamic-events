@@ -289,12 +289,13 @@ class HandlerController extends StatamicController
 
     private function buildEventsList()
     {
-        return Cache::remember('statamic-events::event-list', 10000000, function() {
+        return Cache::remember('statamic-events::event-list', 10000000, function () {
             return collect(config('statamic-events.events'))
                 ->mapWithKeys(function ($folder, $namespace) {
                     return collect(glob(base_path($folder.'/*.php')))
                         ->mapWithKeys(function ($file) use ($namespace) {
                             $fqcn = $namespace.'\\'.Str::of($file)->after('/src/')->before('.php')->replace('/', '\\');
+
                             return [$fqcn => $fqcn];
                         })
                         ->all();
@@ -309,12 +310,12 @@ class HandlerController extends StatamicController
             $driverFields = $this->ensureFieldsAreTabbed($driver->blueprintFields());
 
             $fields = Blueprint::make()
-                    ->setHandle('statamic-events-'.$handle)
-                    ->setContents($driverFields)
-                    ->fields()
-                    ->all()
-                    ->filter(fn (Field $field) => $field->isVisibleOnListing() || $field->get('listable', '') == 'hidden')
-                    ->each(fn ($field) => $blueprint->ensureField($field->handle(), $field->config()));
+                ->setHandle('statamic-events-'.$handle)
+                ->setContents($driverFields)
+                ->fields()
+                ->all()
+                ->filter(fn (Field $field) => $field->isVisibleOnListing() || $field->get('listable', '') == 'hidden')
+                ->each(fn ($field) => $blueprint->ensureField($field->handle(), $field->config()));
         });
 
         return $blueprint;
@@ -328,7 +329,7 @@ class HandlerController extends StatamicController
                     'main' => [
                         'display' => __('main'),
                         'sections' => $this->ensureFieldsAreSectioned($fields),
-                    ]
+                    ],
                 ],
             ];
         }

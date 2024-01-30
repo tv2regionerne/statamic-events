@@ -72,7 +72,6 @@ class ServiceProvider extends AddonServiceProvider
                 ->route('statamic-events.executions.index');
         });
 
-
         return $this;
     }
 
@@ -82,13 +81,13 @@ class ServiceProvider extends AddonServiceProvider
             $permission
                 ->label(__('View Event Handlers'))
                 ->children([
-                    Permission::make("edit statamic events")
+                    Permission::make('edit statamic events')
                         ->label(__('Edit Event Handlers'))
                         ->children([
-                            Permission::make("create statamic events")
+                            Permission::make('create statamic events')
                                 ->label(__('Create Event Handlers')),
 
-                            Permission::make("delete statamic events")
+                            Permission::make('delete statamic events')
                                 ->label(__('Delete Event Handlers')),
                         ]),
                 ]);

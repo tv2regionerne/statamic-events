@@ -12,7 +12,7 @@ it('logs a message', function () {
     $handler->driver = 'audit';
     $handler->config = [
         'level' => 'info',
-        'message' => 'testing info logging'
+        'message' => 'testing info logging',
     ];
     $handler->save();
 
@@ -44,7 +44,7 @@ it('logs a message parsed with antlers', function () {
     $handler->driver = 'audit';
     $handler->config = [
         'level' => 'info',
-        'message' => 'testing info logging: {{ entry:slug }}'
+        'message' => 'testing info logging: {{ entry:slug }}',
     ];
     $handler->save();
 
@@ -76,7 +76,7 @@ it('logs a warning message', function () {
     $handler->driver = 'audit';
     $handler->config = [
         'level' => 'warning',
-        'message' => 'testing info logging'
+        'message' => 'testing info logging',
     ];
     $handler->save();
 

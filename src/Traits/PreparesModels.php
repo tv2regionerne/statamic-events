@@ -53,6 +53,7 @@ trait PreparesModels
 
                 if (in_array($handle, ['id', 'title', 'driver', 'events'])) {
                     $model->setAttribute($handle, $processedValue);
+
                     return;
                 }
 

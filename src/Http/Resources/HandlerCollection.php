@@ -50,7 +50,7 @@ class HandlerCollection extends LaravelResourceCollection
         $columns = $this->columns->pluck('field')->toArray();
 
         return [
-            'data' => $this->collection->map(function ($record) use ($columns) {
+            'data' => $this->collection->map(function ($record) {
                 $row = [];
 
                 foreach ($this->blueprint->fields()->all() as $fieldHandle => $field) {

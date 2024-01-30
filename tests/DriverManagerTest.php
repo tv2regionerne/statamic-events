@@ -6,7 +6,6 @@ use Tv2regionerne\StatamicEvents\Drivers\AbstractDriver;
 use Tv2regionerne\StatamicEvents\Drivers\WebhookDriver;
 use Tv2regionerne\StatamicEvents\Facades\Drivers;
 
-
 test('can discover and get all drivers', function () {
     $all = Drivers::all();
 

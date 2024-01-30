@@ -14,7 +14,7 @@ class EventSubscriber
     {
         // only listen for the events we actually need, to avoid memory or return value issues
         return $this->getHandlers()
-            ->mapWithKeys(function ($handler) use ($dispatcher) {
+            ->mapWithKeys(function ($handler) {
                 return collect($handler->events)
                     ->mapWithKeys(function ($event) {
                         if (! class_exists($event)) {
@@ -22,7 +22,7 @@ class EventSubscriber
                         }
 
                         return [
-                            $event => 'handleEvent'
+                            $event => 'handleEvent',
                         ];
                     })
                     ->filter();
