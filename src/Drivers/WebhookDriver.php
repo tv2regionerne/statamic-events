@@ -83,7 +83,7 @@ class WebhookDriver extends AbstractDriver
             if (($class = ($config['response_handler'] ?? false)) && class_exists($class)) {
                 $execution->log(__('Passing response to handler: :class', ['class' => $class]));
 
-                $response = (new $class())->handle($config, $eventName, $event, $response);
+                $response = (new $class())->handle($config, $eventName, $event, $execution, $response);
 
                 $execution->log(__('Received response from handler'));
             }
