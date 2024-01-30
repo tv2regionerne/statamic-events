@@ -274,6 +274,7 @@ class HandlerController extends StatamicController
                     'type' => 'toggle',
                     'listable' => 'listable',
                     'default' => false,
+                    'required' => true,
                 ],
                 'should_queue' => [
                     'display' => __('Blocking'),
@@ -281,6 +282,7 @@ class HandlerController extends StatamicController
                     'type' => 'toggle',
                     'listable' => 'listable',
                     'default' => true,
+                    'required' => true,
                 ],
             ], 'sidebar', true);
     }

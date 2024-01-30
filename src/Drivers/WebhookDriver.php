@@ -241,7 +241,10 @@ class WebhookDriver extends AbstractDriver
                                         'type' => 'text',
                                         'validate' => [
                                             'required_unless:authentication_type,token,none'
-                                        ]
+                                        ],
+                                        'hide_when' => [
+                                            'authentication_type' => 'contains_any token,none',
+                                        ],
                                     ],
                                 ],
 
@@ -252,7 +255,10 @@ class WebhookDriver extends AbstractDriver
                                         'type' => 'text',
                                         'validate' => [
                                             'required_unless:authentication_type,token,none'
-                                        ]
+                                        ],
+                                        'hide_when' => [
+                                            'authentication_type' => 'contains_any token,none',
+                                        ],
                                     ],
                                 ],
 
@@ -263,7 +269,10 @@ class WebhookDriver extends AbstractDriver
                                         'type' => 'text',
                                         'validate' => [
                                             'required_if:authentication_type,token'
-                                        ]
+                                        ],
+                                        'show_when_any' => [
+                                            'authentication_type' => 'is token',
+                                        ],
                                     ],
                                 ],
                             ],
