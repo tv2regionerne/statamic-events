@@ -15,7 +15,7 @@ class WebhookDriver extends AbstractDriver
                 throw new \Exception(__('No url specified in handler'));
             }
 
-            $request = Http::async(($config['async'] ?? false) ? true : false);
+            $request = Http::async(false);
 
             // headers
             if (! is_array($config['headers'] ?? [])) {
@@ -127,15 +127,6 @@ class WebhookDriver extends AbstractDriver
                                             'put' => __('PUT'),
                                         ],
                                         'default' => 'get',
-                                        'width' => 25,
-                                    ],
-                                ],
-
-                                'async' => [
-                                    'handle' => 'async',
-                                    'field' => [
-                                        'display' => __('Async'),
-                                        'type' => 'toggle',
                                         'width' => 25,
                                     ],
                                 ],
