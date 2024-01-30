@@ -21,7 +21,16 @@ class AuditDriver extends AbstractDriver
                 'level' => $config['level'],
             ]);
 
-            $execution->complete();
+            // if we have a response handler class specified then hand off to it
+            if (($class = ($config['response_handler'] ?? false)) && class_exists($class)) {
+                $execution->log(__('Passing response to handler: :class', ['class' => $class]));
+
+                $response = (new $class())->handle($config, $eventName, $event, $response);
+
+                $execution->log(__('Received response from handler'));
+            }
+
+            $execution->complete($response ?? '');
         } catch (\Throwable $e) {
             $execution->fail($e->getMessage());
         }
