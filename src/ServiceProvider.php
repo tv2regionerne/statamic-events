@@ -7,8 +7,8 @@ use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
 use Tv2regionerne\StatamicEvents\Facades\Drivers;
-use Tv2regionerne\StatamicEvents\Listeners\EventSubscriber;
 use Tv2regionerne\StatamicEvents\Http\Controllers\Api\HandlerController;
+use Tv2regionerne\StatamicEvents\Listeners\EventSubscriber;
 use Tv2regionerne\StatamicPrivateApi\Facades\PrivateApi;
 
 class ServiceProvider extends AddonServiceProvider
@@ -109,7 +109,7 @@ class ServiceProvider extends AddonServiceProvider
     private function bootApi()
     {
         if (class_exists(PrivateApi::class)) {
-            PrivateApi::addRoute(function() {
+            PrivateApi::addRoute(function () {
                 Route::prefix('/statamic-events/handlers')
                     ->group(function () {
                         Route::get('/', [HandlerController::class, 'index']);

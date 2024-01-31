@@ -3,13 +3,12 @@
 namespace Tv2regionerne\StatamicEvents\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use Statamic\Facades;
 use Statamic\Http\Controllers\API\ApiController;
 use Statamic\Http\Requests\FilteredRequest;
+use Tv2regionerne\StatamicEvents\Facades\Drivers;
 use Tv2regionerne\StatamicEvents\Http\Controllers\HandlerController as CpController;
 use Tv2regionerne\StatamicEvents\Http\Requests\StoreRequest;
 use Tv2regionerne\StatamicEvents\Http\Requests\UpdateRequest;
-use Tv2regionerne\StatamicEvents\Facades\Drivers;
 use Tv2regionerne\StatamicEvents\Models\Handler;
 use Tv2regionerne\StatamicPrivateApi\Traits\VerifiesPrivateAPI;
 
