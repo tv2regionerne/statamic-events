@@ -106,10 +106,6 @@ class HandlerController extends StatamicController
         $fields = $blueprint->fields();
         $fields = $fields->preProcess();
 
-        $fields = $fields->addValues([
-            'driver' => $driver
-        ]);
-
         $driverTitle = $drivers->get($driver)->title();
 
         $viewData = [
@@ -137,7 +133,7 @@ class HandlerController extends StatamicController
     {
         $drivers = Drivers::all();
 
-        $driver = ($handle = $request->input('blueprint')) ? ($drivers->get($handle) ? $handle : false) : false;
+        $driver = ($handle = $request->input('driver')) ? ($drivers->get($handle) ? $handle : false) : false;
 
         if (! $driver) {
             $driver = $drivers->keys()->first();
@@ -172,7 +168,6 @@ class HandlerController extends StatamicController
         if (! $record) {
             throw new NotFoundHttpException();
         }
-
 
         $driver = Drivers::all()->get($record->driver) ?? Drivers::all()->first();
 
@@ -239,7 +234,7 @@ class HandlerController extends StatamicController
         ]);
     }
 
-    private function blueprint(?array $fields = []): Blueprint
+    public function blueprint(?array $fields = []): Blueprint
     {
         $fields = $this->ensureFieldsAreTabbed($fields);
 
@@ -252,15 +247,17 @@ class HandlerController extends StatamicController
                     'handle' => 'driver',
                     'type' => 'hidden',
                     'listable' => 'listable',
+                    'default' => request()->input('blueprint') ?? '',
                 ],
-                'event' => [
-                    'display' => __('Event'),
-                    'handle' => 'event',
+                'events' => [
+                    'display' => __('Events'),
+                    'handle' => 'events',
                     'type' => 'select',
                     'listable' => 'listable',
                     'required' => true,
                     'taggable' => true,
-                    'options' => $this->buildStatamicEventsList(),
+                    'options' => $this->buildEventsList(),
+                    'multiple' => true,
                 ],
                 'title' => [
                     'display' => __('Title'),
@@ -276,6 +273,7 @@ class HandlerController extends StatamicController
                     'handle' => 'enabled',
                     'type' => 'toggle',
                     'listable' => 'listable',
+                    'default' => false,
                     'required' => true,
                 ],
                 'should_queue' => [
@@ -283,20 +281,24 @@ class HandlerController extends StatamicController
                     'handle' => 'enabled',
                     'type' => 'toggle',
                     'listable' => 'listable',
-                    'required' => true,
                     'default' => true,
+                    'required' => true,
                 ],
             ], 'sidebar', true);
     }
 
-    private function buildStatamicEventsList()
+    private function buildEventsList()
     {
-        // we cache this on the assumption a new deploy of statamic will require a cache clear
-        // so this is refreshed
-        return Cache::remember('statamic-events::statamic-event-list', 1000000000, function() {
-            return collect(glob(base_path('vendor/statamic/cms/src/Events/*.php')))
-                ->mapWithKeys(function ($file) {
-                    return ['Statamic\\'.Str::of($file)->after('/src/')->before('.php')->replace('/', '\\') => Str::of($file)->after('/Events/')->before('.php')];
+        return Cache::remember('statamic-events::event-list', 10000000, function () {
+            return collect(config('statamic-events.events'))
+                ->mapWithKeys(function ($folder, $namespace) {
+                    return collect(glob(base_path($folder.'/*.php')))
+                        ->mapWithKeys(function ($file) use ($namespace) {
+                            $fqcn = $namespace.'\\'.Str::of($file)->after('/src/')->before('.php')->replace('/', '\\');
+
+                            return [$fqcn => $fqcn];
+                        })
+                        ->all();
                 })
                 ->all();
         });
@@ -308,12 +310,12 @@ class HandlerController extends StatamicController
             $driverFields = $this->ensureFieldsAreTabbed($driver->blueprintFields());
 
             $fields = Blueprint::make()
-                    ->setHandle('statamic-events-'.$handle)
-                    ->setContents($driverFields)
-                    ->fields()
-                    ->all()
-                    ->filter(fn (Field $field) => $field->isVisibleOnListing() || $field->get('listable', '') == 'hidden')
-                    ->each(fn ($field) => $blueprint->ensureField($field->handle(), $field->config()));
+                ->setHandle('statamic-events-'.$handle)
+                ->setContents($driverFields)
+                ->fields()
+                ->all()
+                ->filter(fn (Field $field) => $field->isVisibleOnListing() || $field->get('listable', '') == 'hidden')
+                ->each(fn ($field) => $blueprint->ensureField($field->handle(), $field->config()));
         });
 
         return $blueprint;
@@ -327,7 +329,7 @@ class HandlerController extends StatamicController
                     'main' => [
                         'display' => __('main'),
                         'sections' => $this->ensureFieldsAreSectioned($fields),
-                    ]
+                    ],
                 ],
             ];
         }

@@ -4,6 +4,7 @@ namespace Tv2regionerne\StatamicEvents\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection as LaravelResourceCollection;
 use Statamic\Facades\Action;
+use Statamic\Facades\Blink;
 use Statamic\Facades\User;
 use Tv2regionerne\StatamicEvents\Facades\Drivers;
 
@@ -49,7 +50,7 @@ class HandlerCollection extends LaravelResourceCollection
         $columns = $this->columns->pluck('field')->toArray();
 
         return [
-            'data' => $this->collection->map(function ($record) use ($columns) {
+            'data' => $this->collection->map(function ($record) {
                 $row = [];
 
                 foreach ($this->blueprint->fields()->all() as $fieldHandle => $field) {
@@ -62,7 +63,7 @@ class HandlerCollection extends LaravelResourceCollection
                     }
                 }
 
-                $row['driver'] = Drivers::all()->get($row['driver'])?->title();
+                $row['driver'] = Blink::once('statamic-events::drivers', fn () => Drivers::all())->get($row['driver'])?->title();
 
                 $row['id'] = $record->getKey();
                 $row['edit_url'] = cp_route('statamic-events.handlers.edit', ['record' => $record->getRouteKey()]);

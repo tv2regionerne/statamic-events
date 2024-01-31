@@ -2,9 +2,7 @@
 
 namespace Tv2regionerne\StatamicEvents\Scopes;
 
-use Illuminate\Support\Carbon;
 use Statamic\Query\Scopes\Filter;
-use Statamic\Support\Arr;
 use Tv2regionerne\StatamicEvents\Models\Handler as HandlerModel;
 
 class Handler extends Filter
@@ -38,7 +36,8 @@ class Handler extends Filter
     public function badge($values)
     {
         $handler = HandlerModel::find($values['handler']);
-        return  __('Handler: :handler', ['handler' => $handler->title]);
+
+        return __('Handler: :handler', ['handler' => $handler->title]);
     }
 
     public function visibleTo($key)

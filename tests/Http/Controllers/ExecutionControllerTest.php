@@ -45,4 +45,3 @@ test('get show page', function () {
         ->get(cp_route('statamic-events.executions.show', ['record' => 2000]))
         ->assertNotFound();
 });
-

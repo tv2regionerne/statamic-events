@@ -9,7 +9,7 @@ use Tv2regionerne\StatamicEvents\Models\Handler;
 
 it('it creates a get request', function () {
     $handler = Handler::factory()->make();
-    $handler->event = 'Statamic\Events\EntrySaving';
+    $handler->events = ['Statamic\Events\EntrySaving'];
     $handler->driver = 'webhook';
     $handler->config = [
         'url' => 'http://www.tv2.com',
@@ -43,7 +43,7 @@ it('it creates a get request', function () {
 
 it('it does nothing when theres no url', function () {
     $handler = Handler::factory()->make();
-    $handler->event = 'Statamic\Events\EntrySaving';
+    $handler->events = ['Statamic\Events\EntrySaving'];
     $handler->driver = 'webhook';
     $handler->config = [
         'method' => 'get',
@@ -76,7 +76,7 @@ it('it does nothing when theres no url', function () {
 
 it('it adds headers to a request', function () {
     $handler = Handler::factory()->make();
-    $handler->event = 'Statamic\Events\EntrySaving';
+    $handler->events = ['Statamic\Events\EntrySaving'];
     $handler->driver = 'webhook';
     $handler->config = [
         'url' => 'http://www.tv2.com',
@@ -86,7 +86,7 @@ it('it adds headers to a request', function () {
                 'key' => 'test',
                 'value' => 'test',
             ],
-        ]
+        ],
     ];
     $handler->save();
 
@@ -116,7 +116,7 @@ it('it adds headers to a request', function () {
 
 it('it adds basic authentication to a request', function () {
     $handler = Handler::factory()->make();
-    $handler->event = 'Statamic\Events\EntrySaving';
+    $handler->events = ['Statamic\Events\EntrySaving'];
     $handler->driver = 'webhook';
     $handler->config = [
         'url' => 'http://www.tv2.com',
@@ -148,13 +148,14 @@ it('it adds basic authentication to a request', function () {
 
     Http::assertSent(function (Request $request) {
         $headers = collect($request->headers());
+
         return $headers->has('Authorization') && str_contains($headers->get('Authorization')[0], 'Basic');
     });
 });
 
 it('it adds bearer token authentication to a request', function () {
     $handler = Handler::factory()->make();
-    $handler->event = 'Statamic\Events\EntrySaving';
+    $handler->events = ['Statamic\Events\EntrySaving'];
     $handler->driver = 'webhook';
     $handler->config = [
         'url' => 'https://www.tv2.com',
@@ -185,19 +186,20 @@ it('it adds bearer token authentication to a request', function () {
 
     Http::assertSent(function (Request $request) {
         $headers = collect($request->headers());
+
         return $headers->has('Authorization') && str_contains($headers->get('Authorization')[0], 'Bearer');
     });
 });
 
 it('it adds a payload to a post request', function () {
     $handler = Handler::factory()->make();
-    $handler->event = 'Statamic\Events\EntrySaving';
+    $handler->events = ['Statamic\Events\EntrySaving'];
     $handler->driver = 'webhook';
     $handler->config = [
         'url' => 'https://www.tv2.com',
         'method' => 'post',
         'payload' => 'i am a payload',
-        'payload_content_type' => 'text/plain'
+        'payload_content_type' => 'text/plain',
     ];
     $handler->save();
 
@@ -222,6 +224,7 @@ it('it adds a payload to a post request', function () {
 
     Http::assertSent(function (Request $request) {
         $headers = collect($request->headers());
+
         return $request->method() == 'POST' &&
             $headers->has('Content-Type') &&
             str_contains($headers->get('Content-Type')[0], 'text/plain') &&
@@ -232,7 +235,7 @@ it('it adds a payload to a post request', function () {
 
 it('it calls a response_handler handler', function () {
     $handler = Handler::factory()->make();
-    $handler->event = 'Statamic\Events\EntrySaving';
+    $handler->events = ['Statamic\Events\EntrySaving'];
     $handler->driver = 'webhook';
     $handler->config = [
         'url' => 'http://www.tv2.com',
@@ -263,7 +266,7 @@ it('it calls a response_handler handler', function () {
     // we would see an error here if the response handler had not been called
 });
 
-class TestResponseHandler
+class WebhookDriverTest
 {
     public function handle($config, $eventName, $event, $response)
     {

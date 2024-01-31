@@ -15,13 +15,26 @@ class AuditDriver extends AbstractDriver
                 'trigger_event' => $eventName,
             ], get_object_vars($event)));
 
-            Log::{$config['level'] ?? 'info'}((string) $message);
+            if ($channel = $config['channel'] ?? null) {
+                Log::channel($config['channel'] ?? null)->{$config['level'] ?? 'info'}((string) $message);
+            } else {
+                Log::{$config['level'] ?? 'info'}((string) $message);
+            }
 
             $execution->log(__('Logged message: :message', ['message' => $message]), [
                 'level' => $config['level'],
             ]);
 
-            $execution->complete();
+            // if we have a response handler class specified then hand off to it
+            if (($class = ($config['response_handler'] ?? false)) && class_exists($class)) {
+                $execution->log(__('Passing response to handler: :class', ['class' => $class]));
+
+                $response = (new $class())->handle($config, $eventName, $event, $execution);
+
+                $execution->log(__('Received response from handler'));
+            }
+
+            $execution->complete($response ?? '');
         } catch (\Throwable $e) {
             $execution->fail($e->getMessage());
         }
@@ -30,6 +43,16 @@ class AuditDriver extends AbstractDriver
     public function blueprintFields(): array
     {
         return [
+            'channel' => [
+                'handle' => 'channel',
+                'field' => [
+                    'display' => __('Channel'),
+                    'type' => 'select',
+                    'required' => false,
+                    'listable' => 'hidden',
+                    'options' => collect(config('logging.channels'))->sortKeys()->keys()->all(),
+                ],
+            ],
             'level' => [
                 'handle' => 'level',
                 'field' => [

@@ -6,17 +6,20 @@ return [
     'drivers' => [
         'audit' => [
             'driver' => Drivers\AuditDriver::class,
-            'response_handlers' => [
-                // define any response handlers
-                // e.g. 'my_handler' => App\ResponseHandlers\MyHandler::class
-                // they should have a handle method, which accepts 4 params
-                // handle(array $config, string $eventName, $event, Response $response)
-            ],
+            'response_handlers' => [],
+        ],
+        'email' => [
+            'driver' => Drivers\EmailDriver::class,
+            'response_handlers' => [],
         ],
         'webhook' => [
             'driver' => Drivers\WebhookDriver::class,
             'response_handlers' => [],
         ],
+    ],
+
+    'events' => [
+        'Statamic' => 'vendor/statamic/cms/src/Events',
     ],
 
     'queue_name' => 'default',
