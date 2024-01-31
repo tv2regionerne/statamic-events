@@ -2,11 +2,14 @@
 
 namespace Tv2regionerne\StatamicEvents;
 
+use Illuminate\Support\Facades\Route;
 use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
 use Tv2regionerne\StatamicEvents\Facades\Drivers;
 use Tv2regionerne\StatamicEvents\Listeners\EventSubscriber;
+use Tv2regionerne\StatamicEvents\Http\Controllers\Api\HandlerController;
+use Tv2regionerne\StatamicPrivateApi\Facades\PrivateApi;
 
 class ServiceProvider extends AddonServiceProvider
 {
@@ -33,6 +36,13 @@ class ServiceProvider extends AddonServiceProvider
             'resources/js/cp.js',
         ],
     ];
+
+    public function boot()
+    {
+        parent::boot();
+
+        $this->bootApi();
+    }
 
     public function bootAddon()
     {
@@ -92,6 +102,24 @@ class ServiceProvider extends AddonServiceProvider
                         ]),
                 ]);
         })->group('Statamic Events');
+
+        return $this;
+    }
+
+    private function bootApi()
+    {
+        if (class_exists(PrivateApi::class)) {
+            PrivateApi::addRoute(function() {
+                Route::prefix('/statamic-events/handlers')
+                    ->group(function () {
+                        Route::get('/', [HandlerController::class, 'index']);
+                        Route::get('{id}', [HandlerController::class, 'show']);
+                        Route::post('/', [HandlerController::class, 'store']);
+                        Route::patch('{id}', [HandlerController::class, 'update']);
+                        Route::delete('{id}', [HandlerController::class, 'destroy']);
+                    });
+            });
+        }
 
         return $this;
     }

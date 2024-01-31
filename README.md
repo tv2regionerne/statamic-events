@@ -43,3 +43,22 @@ class MyHandler
 }
 ```
 
+## API
+
+This add-on integrates with the [Private API addon](https://statamic.com/addons/tv2reg/private-api) to provide an end point for managing handlers. The following endpoints are available:
+
+Viewing all handlers:
+`GET {base}/statamic-events/handlers`
+
+View an individual handler:
+`GET {base}/statamic-events/handlers/{id}`
+
+Add a new handler:
+`POST {base}/statamic-events/handlers`
+
+Update an individual handler:
+`PATCH {base}/statamic-events/handlers/{id}`
+
+Delete a handler
+`DELETE {base}/statamic-events/handlers/{id}`
+

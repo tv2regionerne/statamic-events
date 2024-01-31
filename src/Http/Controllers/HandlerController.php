@@ -234,7 +234,7 @@ class HandlerController extends StatamicController
         ]);
     }
 
-    private function blueprint(?array $fields = []): Blueprint
+    public function blueprint(?array $fields = []): Blueprint
     {
         $fields = $this->ensureFieldsAreTabbed($fields);
 
