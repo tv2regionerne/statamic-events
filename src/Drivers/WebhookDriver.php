@@ -54,8 +54,10 @@ class WebhookDriver extends AbstractDriver
                 $request->retry($retries, $config['retry_wait']);
             }
 
+            $data = $event->toArray();
+
             // payload?
-            if ($payload = ($config['payload'] ?? false)) {
+            if ((! in_array($config['method'], ['GET', 'DELETE'])) && ($payload = ($config['payload'] ?? $data))) {
 
                 if ($config['payload_antlers_parse'] ?? false) {
                     $payload = Antlers::parse($payload, array_merge([
@@ -70,7 +72,7 @@ class WebhookDriver extends AbstractDriver
                 $request->withBody($payload, $config['payload_content_type']);
             }
 
-            $execution->log(__('Sending request to :url', ['url' => $config['url']]));
+            $execution->log(__('Sending request to :url', ['url' => $config['url'], 'payload' => $payload]));
 
             // run the request
             $response = $request->{$config['method']}($config['url']);

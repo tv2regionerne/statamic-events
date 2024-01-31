@@ -19,6 +19,8 @@ class Execution extends Model
 
     public function complete(string $output = '')
     {
+        $this->log(__('Complete'), ['output' => $output]);
+
         $this->output = $output;
         $this->status = 'completed';
         $this->save();
@@ -26,6 +28,8 @@ class Execution extends Model
 
     public function fail(string $output = '')
     {
+        $this->log(__('Failed'), ['output' => $output]);
+
         $this->output = $output;
         $this->status = 'failed';
         $this->save();

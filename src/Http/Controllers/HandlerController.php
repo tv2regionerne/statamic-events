@@ -255,9 +255,10 @@ class HandlerController extends StatamicController
                     'type' => 'select',
                     'listable' => 'listable',
                     'required' => true,
-                    'taggable' => true,
+                    'taggable' => false,
                     'options' => $this->buildEventsList(),
                     'multiple' => true,
+                    'clearable' => true,
                 ],
                 'title' => [
                     'display' => __('Title'),
@@ -278,7 +279,7 @@ class HandlerController extends StatamicController
                 ],
                 'should_queue' => [
                     'display' => __('Blocking'),
-                    'handle' => 'enabled',
+                    'handle' => 'should_queue',
                     'type' => 'toggle',
                     'listable' => 'listable',
                     'default' => true,
