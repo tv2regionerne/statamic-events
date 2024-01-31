@@ -54,10 +54,30 @@ class WebhookDriver extends AbstractDriver
                 $request->retry($retries, $config['retry_wait']);
             }
 
-            $data = $event->toArray();
+            // get all public properties on the event
+            $class = get_class($event);
+            $ref = new \ReflectionClass($class);
+            $properties = $ref->getProperties(); // get class properties
+            $ownProperties = array();
+
+            foreach ($properties as $property) {
+                if ($property->getDeclaringClass()->getName() !== $ref->getName()) {
+                    continue;
+                }
+
+                $name = $property->getName();
+
+                $data[$name] = ($event->{$name})->toArray();
+            }
+
+            $payload = false;
+
+            if (! in_array(strtoupper($config['method']), ['GET', 'DELETE'])) {
+                $payload = ($config['payload'] ?? $data);
+            }
 
             // payload?
-            if ((! in_array($config['method'], ['GET', 'DELETE'])) && ($payload = ($config['payload'] ?? $data))) {
+            if ($payload) {
 
                 if ($config['payload_antlers_parse'] ?? false) {
                     $payload = Antlers::parse($payload, array_merge([
@@ -69,7 +89,7 @@ class WebhookDriver extends AbstractDriver
                     $payload = json_decode($payload, true);
                 }
 
-                $request->withBody($payload, $config['payload_content_type']);
+                $request->withBody($payload, $config['payload_content_type'] ?? 'application/x-www-form-urlencoded');
             }
 
             $execution->log(__('Sending request to :url', ['url' => $config['url'], 'payload' => $payload]));
