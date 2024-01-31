@@ -8,7 +8,7 @@ test('get model index', function () {
     Handler::factory()->count(2)->create();
     $user = User::make()->makeSuper()->save();
 
-    $response = $this
+    $this
         ->actingAs($user)
         ->get(cp_route('statamic-events.handlers.index'))
         ->assertOk()

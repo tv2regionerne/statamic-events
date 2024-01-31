@@ -17,14 +17,14 @@ class EmailDriver extends AbstractDriver
 
             $mail = Mail::mailer($config['mailer'] ?? null);
 
-            $mail->to($config['to']);
+            $mail->to(collect($config['to'])->pluck('email')->all());
 
             if ($cc = $config['cc'] ?? []) {
-                $mail->cc($cc);
+                $mail->cc(collect($cc)->pluck('email')->all());
             }
 
             if ($bcc = $config['bcc'] ?? []) {
-                $mail->bcc($bcc);
+                $mail->bcc(collect($bcc)->pluck('email')->all());
             }
 
             if ($from = $config['from'] ?? []) {
@@ -83,11 +83,13 @@ class EmailDriver extends AbstractDriver
                                                     'type' => 'text',
                                                     'required' => true,
                                                     'listable' => 'hidden',
+                                                    'validate' => 'email',
                                                 ],
                                             ],
                                         ],
                                         'required' => true,
                                         'listable' => 'hidden',
+                                        'fullscreen' => false,
                                     ],
                                 ],
 
@@ -113,13 +115,15 @@ class EmailDriver extends AbstractDriver
                                                 'field' => [
                                                     'display' => __('Email'),
                                                     'type' => 'text',
-                                                    'required' => true,
+                                                    'required' => false,
                                                     'listable' => 'hidden',
+                                                    'validate' => 'email',
                                                 ],
                                             ],
                                         ],
-                                        'required' => true,
+                                        'required' => false,
                                         'listable' => 'hidden',
+                                        'fullscreen' => false,
                                     ],
                                 ],
 
@@ -135,13 +139,15 @@ class EmailDriver extends AbstractDriver
                                                 'field' => [
                                                     'display' => __('Email'),
                                                     'type' => 'text',
-                                                    'required' => true,
+                                                    'required' => false,
                                                     'listable' => 'hidden',
+                                                    'validate' => 'email',
                                                 ],
                                             ],
                                         ],
-                                        'required' => true,
+                                        'required' => false,
                                         'listable' => 'hidden',
+                                        'fullscreen' => false,
                                     ],
                                 ],
 
@@ -188,6 +194,37 @@ class EmailDriver extends AbstractDriver
                                         'type' => 'select',
                                         'listable' => 'hidden',
                                         'options' => collect(config('mail.mailers'))->sortKeys()->keys()->all(),
+                                    ],
+                                ],
+
+                                'from' => [
+                                    'handle' => 'from',
+                                    'field' => [
+                                        'display' => __('From'),
+                                        'type' => 'group',
+                                        'fields' => [
+                                            [
+                                                'handle' => 'email',
+                                                'field' => [
+                                                    'display' => __('Email'),
+                                                    'type' => 'text',
+                                                    'required' => false,
+                                                    'listable' => 'hidden',
+                                                    'validate' => 'email',
+                                                ],
+                                            ],
+                                            [
+                                                'handle' => 'name',
+                                                'field' => [
+                                                    'display' => __('Name'),
+                                                    'type' => 'text',
+                                                    'required' => false,
+                                                    'listable' => 'hidden',
+                                                ],
+                                            ],
+                                        ],
+                                        'listable' => 'hidden',
+                                        'fullscreen' => false,
                                     ],
                                 ],
 
