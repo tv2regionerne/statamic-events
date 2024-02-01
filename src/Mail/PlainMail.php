@@ -13,16 +13,8 @@ class PlainMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public array $config = [];
-
-    /**
-     * Create a new message instance.
-     *
-     * @return void
-     */
-    public function __construct($config)
+    public function __construct(public array $config = [])
     {
-        $this->config = $config;
     }
 
     public function content(): Content
@@ -35,15 +27,15 @@ class PlainMail extends Mailable
 
     public function envelope(): Envelope
     {
-        $from = null;
+        $fromParam = null;
         if ($from = $config['from'] ?? []) {
             if ($from['email'] ?? false) {
-                $from = new Address($from['email'], $from['name'] ?? '');
+                $fromParam = new Address($from['email'], $from['name'] ?? '');
             }
         }
 
         return new Envelope(
-            from: $from,
+            from: $fromParam,
             subject: $this->config['subject'] ?? __('No subject provided'),
         );
     }
