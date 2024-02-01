@@ -3,6 +3,7 @@
 namespace Tv2regionerne\StatamicEvents\Drivers;
 
 use Illuminate\Support\Facades\Mail;
+use Statamic\Facades\Antlers;
 use Tv2regionerne\StatamicEvents\Mail\PlainMail;
 use Tv2regionerne\StatamicEvents\Models\Execution;
 
@@ -15,23 +16,20 @@ class EmailDriver extends AbstractDriver
                 throw new \Exception(__('No to addresses specified in handler'));
             }
 
-            $mail = Mail::mailer($config['mailer'] ?? null);
+            $toEmails = collect($config['to'])->pluck('email')->all();
 
-            $mail->to(collect($config['to'])->pluck('email')->all());
+            $mail = Mail::mailer($config['mailer'] ?? null)
+                ->to($toEmails);
 
             if ($cc = $config['cc'] ?? []) {
-                $mail->cc(collect($cc)->pluck('email')->all());
+                $mail = $mail->cc(collect($cc)->pluck('email')->all());
             }
 
             if ($bcc = $config['bcc'] ?? []) {
-                $mail->bcc(collect($bcc)->pluck('email')->all());
+                $mail = $mail->bcc(collect($bcc)->pluck('email')->all());
             }
 
-            if ($from = $config['from'] ?? []) {
-                Mail::alwaysFrom($from['email'], $from['name']);
-            }
-
-            $execution->log(__('Sending email to :to', ['to' => implode(', ', $config['to'])]));
+            $execution->log(__('Sending email to :to', ['to' => implode(', ', $toEmails)]));
 
             $sent = false;
             if ($mailable = $config['mailable'] ?? []) {
@@ -41,8 +39,20 @@ class EmailDriver extends AbstractDriver
                 }
             }
 
+            $config['subject'] = Antlers::parse($config['subject'] ?? '', array_merge([
+                'trigger_event' => $eventName,
+            ], get_object_vars($event)));
+
+            $config['text'] = Antlers::parse($config['text'] ?? '', array_merge([
+                'trigger_event' => $eventName,
+            ], get_object_vars($event)));
+
+            $config['html'] = Antlers::parse($config['html'] ?? '', array_merge([
+                'trigger_event' => $eventName,
+            ], get_object_vars($event)));
+
             if (! $sent) {
-                $mail->send(new PlainMail($config['subject'] ?? '', $config['text'] ?? '', $config['html'] ?? ''));
+                $mail->send(new PlainMail($config));
             }
 
             // if we have a response handler class specified then hand off to it
@@ -179,7 +189,7 @@ class EmailDriver extends AbstractDriver
                                         'listable' => 'hidden',
                                         'options' => collect(glob(base_path('App/Mail/*.php')))
                                             ->mapWithKeys(function ($file) {
-                                                $fqcn = $namespace.'\\'.Str::of($file)->after('/src/')->before('.php')->replace('/', '\\');
+                                                $fqcn = '\\App\\Mail\\'.Str::of($file)->afterLast('/')->before('.php')->replace('/', '\\');
 
                                                 return [$fqcn => Str::of($file)->afterLast('/')->before('.php')];
                                             })

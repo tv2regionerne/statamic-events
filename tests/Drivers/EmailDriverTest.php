@@ -12,7 +12,7 @@ it('creates a plain text mail', function () {
     $handler->events = ['Statamic\Events\EntrySaving'];
     $handler->driver = 'email';
     $handler->config = [
-        'to' => ['test@test.com'],
+        'to' => [['email' => 'test@test.com']],
         'text' => 'This is some text',
     ];
     $handler->save();
@@ -39,7 +39,7 @@ it('creates a plain text mail', function () {
     Mail::assertSentCount(1);
 
     Mail::assertSent(PlainMail::class, function (PlainMail $mail) {
-        return $mail->config['plain'] == 'This is some text';
+        return $mail->config['text'] == 'This is some text';
     });
 });
 
@@ -48,7 +48,7 @@ it('creates an html mail', function () {
     $handler->events = ['Statamic\Events\EntrySaving'];
     $handler->driver = 'email';
     $handler->config = [
-        'to' => ['test@test.com'],
+        'to' => [['email' => 'test@test.com']],
         'html' => '<p>This is some text</p>',
     ];
     $handler->save();
