@@ -277,6 +277,17 @@ class HandlerController extends StatamicController
                     'default' => false,
                     'required' => true,
                 ],
+                'throw_exception_on_fail' => [
+                    'display' => __('Throw exception on fail'),
+                    'handle' => 'throw_exception_on_fail',
+                    'type' => 'toggle',
+                    'listable' => 'listable',
+                    'default' => false,
+                    'required' => false,
+                    'show_when' => [
+                        'should_queue' => '0',
+                    ],
+                ],
                 'should_queue' => [
                     'display' => __('Blocking'),
                     'handle' => 'should_queue',

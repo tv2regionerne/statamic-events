@@ -18,6 +18,7 @@ class Handler extends Model
         'enabled' => 'boolean',
         'events' => 'array',
         'should_queue' => 'boolean',
+        'throw_exception_on_fail' => 'boolean',
     ];
 
     public function executions(): HasMany

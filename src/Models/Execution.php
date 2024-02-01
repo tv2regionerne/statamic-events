@@ -33,6 +33,12 @@ class Execution extends Model
         $this->output = $output;
         $this->status = 'failed';
         $this->save();
+
+        if ($handler = $this->handler)
+            if ($handler->throw_exception_on_fail && ! $handler->should_queue) {
+                throw new \Exception('Failed: '.$output);
+            }
+        }
     }
 
     public function handler(): BelongsTo

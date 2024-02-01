@@ -51,7 +51,7 @@ trait PreparesModels
 
                 $handle = $field->handle();
 
-                if (in_array($handle, ['id', 'title', 'driver', 'events', 'should_queue', 'enabled'])) {
+                if (in_array($handle, ['id', 'title', 'driver', 'events', 'should_queue', 'enabled', 'throw_exception_on_fail'])) {
                     $model->setAttribute($handle, $processedValue);
 
                     return;
