@@ -285,7 +285,7 @@ class HandlerController extends StatamicController
                     'default' => false,
                     'required' => false,
                     'show_when' => [
-                        'should_queue' => '0',
+                        'should_queue' => 'is true',
                     ],
                 ],
                 'should_queue' => [
