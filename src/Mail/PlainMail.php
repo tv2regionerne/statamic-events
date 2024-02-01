@@ -35,15 +35,15 @@ class PlainMail extends Mailable
 
     public function envelope(): Envelope
     {
-        $from = null;
+        $fromParam = null;
         if ($from = $config['from'] ?? []) {
             if ($from['email'] ?? false) {
-                $from = new Address($from['email'], $from['name'] ?? '');
+                $fromParam = new Address($from['email'], $from['name'] ?? '');
             }
         }
 
         return new Envelope(
-            from: $from,
+            from: $fromParam,
             subject: $this->config['subject'] ?? __('No subject provided'),
         );
     }
