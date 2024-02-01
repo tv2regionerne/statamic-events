@@ -33,6 +33,7 @@
         "statamic/cms": "^4.46"
     },
     "require-dev": {
+        "laravel/pint": "^1.13",
         "mockery/mockery": "^1.3.1",
         "nunomaduro/collision": "^6.0 || ^7.0",
         "orchestra/testbench": "^7.0 || ^8.0",

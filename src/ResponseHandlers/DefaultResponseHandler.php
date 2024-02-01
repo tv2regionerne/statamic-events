@@ -7,7 +7,7 @@ use Statamic\Facades;
 
 class DefaultResponseHandler
 {
-    public handle(array $config, string $eventName, mixed $event, mixed $response = null)
+    public function handle(array $config, string $eventName, mixed $event, mixed $response = null)
     {
         if (! $response) {
             return;
