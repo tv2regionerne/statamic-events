@@ -15,20 +15,21 @@ class EmailDriver extends AbstractDriver
                 throw new \Exception(__('No to addresses specified in handler'));
             }
 
-            $mail = Mail::mailer($config['mailer'] ?? null);
+            if ($from = $config['from'] ?? []) {
+                if ($from['email'] ?? false) {
+                    Mail::alwaysFrom($from['email'], $from['name'] ?? '');
+                }
+            }
 
-            $mail->to(collect($config['to'])->pluck('email')->all());
+            $mail = Mail::mailer($config['mailer'] ?? null)
+                ->to(collect($config['to'])->pluck('email')->all());
 
             if ($cc = $config['cc'] ?? []) {
-                $mail->cc(collect($cc)->pluck('email')->all());
+                $mail = $mail->cc(collect($cc)->pluck('email')->all());
             }
 
             if ($bcc = $config['bcc'] ?? []) {
-                $mail->bcc(collect($bcc)->pluck('email')->all());
-            }
-
-            if ($from = $config['from'] ?? []) {
-                Mail::alwaysFrom($from['email'], $from['name']);
+                $mail = $mail->bcc(collect($bcc)->pluck('email')->all());
             }
 
             $execution->log(__('Sending email to :to', ['to' => implode(', ', $config['to'])]));
