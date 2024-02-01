@@ -13,16 +13,8 @@ class PlainMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public array $config = [];
-
-    /**
-     * Create a new message instance.
-     *
-     * @return void
-     */
-    public function __construct($config)
+    public function __construct(public array $config = [])
     {
-        $this->config = $config;
     }
 
     public function content(): Content
