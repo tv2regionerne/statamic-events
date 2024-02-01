@@ -25,23 +25,6 @@ class PlainMail extends Mailable
         $this->config = $config;
     }
 
-    /**
-     * Build the message.
-     *
-     * @return $this
-     */
-    public function build()
-    {
-        return $this
-            ->subject($this->config['subject'])
-            ->text('statamic-events::mail.text', [
-                'text' => $this->config['plain'],
-            ])
-            ->view('statamic-events::mail.html', [
-                'html' => $this->config['html'],
-            ]);
-    }
-
     public function content(): Content
     {
         return new Content(
