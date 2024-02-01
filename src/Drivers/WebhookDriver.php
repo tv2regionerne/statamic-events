@@ -55,21 +55,9 @@ class WebhookDriver extends AbstractDriver
             }
 
             // get all public properties on the event
-            $class = get_class($event);
-            $ref = new \ReflectionClass($class);
-            $properties = $ref->getProperties(); // get class properties
-
-            $data = [];
-
-            foreach ($properties as $property) {
-                if ($property->getDeclaringClass()->getName() !== $ref->getName()) {
-                    continue;
-                }
-
-                $name = $property->getName();
-
-                $data[$name] = ($event->{$name})->toArray();
-            }
+            $data = array_merge([
+                'trigger_event' => $eventName,
+            ], get_object_vars($event));
 
             $payload = false;
 
