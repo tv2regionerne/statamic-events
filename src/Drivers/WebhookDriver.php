@@ -58,7 +58,8 @@ class WebhookDriver extends AbstractDriver
             $class = get_class($event);
             $ref = new \ReflectionClass($class);
             $properties = $ref->getProperties(); // get class properties
-            $ownProperties = array();
+
+            $data = [];
 
             foreach ($properties as $property) {
                 if ($property->getDeclaringClass()->getName() !== $ref->getName()) {
@@ -81,7 +82,7 @@ class WebhookDriver extends AbstractDriver
 
                 if ($config['payload_antlers_parse'] ?? false) {
                     $payload = Antlers::parse($payload, array_merge([
-                        'trigger_event' => $event,
+                        'trigger_event' => $eventName,
                     ], $data));
                 }
 
