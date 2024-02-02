@@ -74,8 +74,8 @@ class WebhookDriver extends AbstractDriver
                     ], $data));
                 }
 
-                if ($config['payload_json_decode'] ?? false) {
-                    $payload = json_decode($payload, true);
+                if (! is_string($payload)) {
+                    $payload = json_encode($payload);
                 }
 
                 $request->withBody($payload, $config['payload_content_type'] ?? 'application/x-www-form-urlencoded');
@@ -299,9 +299,6 @@ class WebhookDriver extends AbstractDriver
                                     'field' => [
                                         'display' => __('Body'),
                                         'type' => 'textarea',
-                                        'validate' => [
-                                            'required_unless:method,get,delete',
-                                        ],
                                     ],
                                 ],
 
@@ -321,6 +318,9 @@ class WebhookDriver extends AbstractDriver
                                     'field' => [
                                         'display' => __('Parse using Antlers'),
                                         'type' => 'toggle',
+                                        'hide_when' => [
+                                            'payload' => 'empty',
+                                        ],
                                     ],
                                 ],
                             ],

@@ -35,7 +35,7 @@ A handler is a class containing a handle method:
 ```php
 class MyHandler 
 {
-   public handle(array $config, string $eventName, mixed $event, mixed $response = null) 
+   public function handle(array $config, string $eventName, mixed $event, mixed $response = null) 
    {
       // run some logic
       // you may want to $execution->log(string $message, array $data) something 
