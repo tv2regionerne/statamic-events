@@ -3,7 +3,9 @@
 namespace Tv2regionerne\StatamicEvents\Listeners;
 
 use Illuminate\Events\Dispatcher;
+use Statamic\Facades\Antlers;
 use Statamic\Facades\Blink;
+use Tv2regionerne\StatamicEvents\Events\HandlerFailed;
 use Tv2regionerne\StatamicEvents\Facades\Drivers;
 use Tv2regionerne\StatamicEvents\Jobs\RunHandler;
 use Tv2regionerne\StatamicEvents\Models\Handler;
@@ -43,6 +45,27 @@ class EventSubscriber
                         'input' => $event,
                         'status' => 'processing',
                     ]);
+
+                    if ($handler->filter) {
+                        try {
+                            $result = (string) Antlers::parse($handler->filter, [
+                                'eventName' => $eventName,
+                                'event' => $event,
+                            ]);
+
+                            if (in_array($result, ["0", "false"])) {
+                                $execution->fail(__('Failed to pass filter'));
+
+                                return;
+                            }
+                        } catch (\Throwable $e) {
+                            $execution->fail(__('Error running filter'));
+
+                            HandlerFailed::dispatch($handler, $execution, $e);
+
+                            return;
+                        }
+                    }
 
                     if ($handler->should_queue) {
                         $execution->log(__('Added to queue'));

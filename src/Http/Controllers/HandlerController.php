@@ -242,6 +242,15 @@ class HandlerController extends StatamicController
             ->setHandle('statamic-events')
             ->setContents($fields)
             ->ensureFieldsInTab([
+                'filter' => [
+                    'display' => __('Filter'),
+                    'handle' => 'filter',
+                    'type' => 'code',
+                    'listable' => 'hidden',
+                    'required' => false,
+                    'instructions' => __('event and eventName are available as variables'),
+                    'instructions_position' => 'below',
+                ],
                 'driver' => [
                     'display' => __('Driver'),
                     'handle' => 'driver',
