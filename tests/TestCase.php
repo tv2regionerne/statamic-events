@@ -91,7 +91,7 @@ abstract class TestCase extends OrchestraTestCase
         foreach ($configs as $config) {
             $app['config']->set(
                 "statamic.$config",
-                require (__DIR__."/../vendor/statamic/cms/config/{$config}.php")
+                require(__DIR__."/../vendor/statamic/cms/config/{$config}.php")
             );
         }
 
@@ -102,13 +102,13 @@ abstract class TestCase extends OrchestraTestCase
             'directory' => __DIR__.'/__fixtures__/users',
         ]);
 
-        $app['config']->set('statamic-events', require (__DIR__.'/../config/statamic-events.php'));
+        $app['config']->set('statamic-events', require(__DIR__.'/../config/statamic-events.php'));
 
         $app['config']->set('app.debug', true);
 
         $app['config']->set(
             'activitylog',
-            require (__DIR__.'/../vendor/spatie/laravel-activitylog/config/activitylog.php')
+            require(__DIR__.'/../vendor/spatie/laravel-activitylog/config/activitylog.php')
         );
 
         //         Statamic::pushCpRoutes(function () {

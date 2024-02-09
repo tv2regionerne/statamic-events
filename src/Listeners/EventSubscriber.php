@@ -53,7 +53,7 @@ class EventSubscriber
                                 'event' => $event,
                             ]);
 
-                            if (in_array($result, ["0", "false"])) {
+                            if (in_array($result, ['0', 'false'])) {
                                 $execution->fail(__('Failed to pass filter'));
 
                                 return;
