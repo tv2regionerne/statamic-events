@@ -93,6 +93,92 @@ it('intercepts a defined event when disabled', function () {
     $entry->save();
 });
 
+it('doesnt intercept a defined event when filter fails', function () {
+    $handler = Handler::factory()->make();
+    $handler->events = ['Statamic\Events\EntrySaving'];
+    $handler->driver = 'webhook';
+    $handler->enabled = true;
+    $handler->filter = '{{ if true }}false{{ else }}true{{ /if }}';
+    $handler->title = 'ryan';
+    $handler->save();
+
+    Facades\Blink::forget('statamic-events::handlers::all');
+
+    // register the listener
+    Event::listen(
+        \Statamic\Events\EntrySaving::class,
+        [\Tv2regionerne\StatamicEvents\Listeners\EventSubscriber::class, 'handleEvent']
+    );
+
+    $collection = Facades\Collection::make('test');
+    $collection->save();
+
+    $entry = Facades\Entry::make();
+    $entry->collection($collection);
+    $entry->slug('test');
+    $entry->id('test');
+    $entry->save();
+
+    $this->assertSame('failed', $handler->executions->first()->status);
+});
+
+it('intercepts a defined event when filter passes', function () {
+    $handler = Handler::factory()->make();
+    $handler->events = ['Statamic\Events\EntrySaving'];
+    $handler->driver = 'webhook';
+    $handler->filter = 'true';
+    $handler->save();
+
+    Facades\Blink::forget('statamic-events::handlers::all');
+
+    // register the listener
+    Event::listen(
+        \Statamic\Events\EntrySaving::class,
+        [\Tv2regionerne\StatamicEvents\Listeners\EventSubscriber::class, 'handleEvent']
+    );
+
+    $collection = Facades\Collection::make('test');
+    $collection->save();
+
+    $entry = Facades\Entry::make();
+    $entry->collection($collection);
+    $entry->slug('test');
+    $entry->id('test');
+    $entry->save();
+
+    $this->assertCount(0, $handler->executions->first()->logs()->get()->where('description', __('Failed to pass filter')));
+});
+
+it('fires handler failed when a filter is invalid', function () {
+    $handler = Handler::factory()->make();
+    $handler->events = ['Statamic\Events\EntrySaving'];
+    $handler->driver = 'webhook';
+    $handler->filter = '{{{ if true }}false{{ else }}true{{ /if }}';
+    $handler->save();
+
+    Facades\Blink::forget('statamic-events::handlers::all');
+
+    // register the listener
+    Event::listen(
+        \Statamic\Events\EntrySaving::class,
+        [\Tv2regionerne\StatamicEvents\Listeners\EventSubscriber::class, 'handleEvent']
+    );
+
+    // register the listener
+    Event::fake([\Tv2regionerne\StatamicEvents\Events\HandlerFailed::class]);
+
+    $collection = Facades\Collection::make('test');
+    $collection->save();
+
+    $entry = Facades\Entry::make();
+    $entry->collection($collection);
+    $entry->slug('test');
+    $entry->id('test');
+    $entry->save();
+
+    Event::assertDispatched(\Tv2regionerne\StatamicEvents\Events\HandlerFailed::class);
+});
+
 it('queues a defined event', function () {
     $handler = Handler::factory()->make();
     $handler->events = ['Statamic\Events\EntrySaving'];

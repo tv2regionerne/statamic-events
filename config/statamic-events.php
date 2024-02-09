@@ -20,6 +20,7 @@ return [
 
     'events' => [
         'Statamic' => 'vendor/statamic/cms/src/Events',
+        'StatamicEvents' => 'vendor/tv2regionerne/statamic-events/src/Events',
     ],
 
     'queue_name' => 'default',
