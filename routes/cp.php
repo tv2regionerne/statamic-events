@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Tv2regionerne\StatamicEvents\Http\Controllers\ExecutionController;
 use Tv2regionerne\StatamicEvents\Http\Controllers\HandlerActionsController;
 use Tv2regionerne\StatamicEvents\Http\Controllers\HandlerController;
+use Tv2regionerne\StatamicEvents\Http\Controllers\TriggerController;
 
 Route::name('statamic-events.')->prefix('statamic-events')->group(function () {
     Route::name('handlers.')->prefix('handlers')->group(function () {
@@ -27,4 +28,6 @@ Route::name('statamic-events.')->prefix('statamic-events')->group(function () {
 
         Route::get('/{record}', [ExecutionController::class, 'show'])->name('show');
     });
+
+    Route::post('/trigger', [TriggerController::class, 'index'])->name('trigger');
 });

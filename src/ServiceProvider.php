@@ -18,6 +18,10 @@ class ServiceProvider extends AddonServiceProvider
         Actions\DeleteHandler::class,
     ];
 
+    protected $fieldtypes = [
+        Fieldtypes\EventTrigger::class,
+    ];
+
     protected $routes = [
         'cp' => __DIR__.'/../routes/cp.php',
     ];
