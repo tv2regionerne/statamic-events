@@ -4,9 +4,7 @@ namespace Tv2regionerne\StatamicEvents\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection as LaravelResourceCollection;
 use Statamic\Facades\Action;
-use Statamic\Facades\Blink;
 use Statamic\Facades\User;
-use Tv2regionerne\StatamicEvents\Facades\Drivers;
 
 class HandlerCollection extends LaravelResourceCollection
 {
