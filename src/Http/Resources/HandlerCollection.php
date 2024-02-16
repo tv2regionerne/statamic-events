@@ -47,23 +47,31 @@ class HandlerCollection extends LaravelResourceCollection
     {
         $this->setColumns();
 
-        $columns = $this->columns->pluck('field')->toArray();
-
         return [
             'data' => $this->collection->map(function ($record) {
                 $row = [];
 
+                $columns = collect($record->getAttributes())->keys();
+
                 foreach ($this->blueprint->fields()->all() as $fieldHandle => $field) {
                     $key = str_replace('->', '.', $fieldHandle);
 
-                    $row[$fieldHandle] = $field->setValue(data_get($record, $key))->preProcessIndex()->value();
+                    if (! str_contains($key, '.')) {
+                        if (! $columns->contains($key)) {
+                            $key = 'config.'.$key;
+                        }
+                    }
+
+                    if ($key == 'driver') {
+                        $row[$fieldHandle] = data_get($record, $key);
+                    } else {
+                        $row[$fieldHandle] = $field->setValue(data_get($record, $key))->preProcessIndex()->value();
+                    }
 
                     if ($fieldHandle == 'should_queue') {
                         $row[$fieldHandle] = ! $row[$fieldHandle];
                     }
                 }
-
-                $row['driver'] = Blink::once('statamic-events::drivers', fn () => Drivers::all())->get($row['driver'])?->title();
 
                 $row['id'] = $record->getKey();
                 $row['edit_url'] = cp_route('statamic-events.handlers.edit', ['record' => $record->getRouteKey()]);

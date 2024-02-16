@@ -246,6 +246,7 @@ class HandlerController extends StatamicController
                     'display' => __('Filter'),
                     'handle' => 'filter',
                     'type' => 'code',
+                    'mode_selectable' => false,
                     'listable' => 'hidden',
                     'required' => false,
                     'instructions' => __('event and eventName are available as variables'),
@@ -308,7 +309,7 @@ class HandlerController extends StatamicController
             ], 'sidebar', true);
     }
 
-    private function buildEventsList()
+    public function buildEventsList()
     {
         return Cache::remember('statamic-events::event-list', 10000000, function () {
             return collect(config('statamic-events.events'))

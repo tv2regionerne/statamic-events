@@ -26,6 +26,10 @@ class HandlerController extends ApiController
         $handler = Handler::find($id);
 
         $this->abortIfInvalid($handler);
+
+        $data = (new CpController($request))->edit($id);
+
+        return $data['values'];
     }
 
     public function store(StoreRequest $request)
