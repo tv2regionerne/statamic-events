@@ -7,6 +7,7 @@ use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
 use Tv2regionerne\StatamicEvents\Facades\Drivers;
+use Tv2regionerne\StatamicEvents\Http\Controllers\Api\EventController;
 use Tv2regionerne\StatamicEvents\Http\Controllers\Api\HandlerController;
 use Tv2regionerne\StatamicEvents\Listeners\EventSubscriber;
 use Tv2regionerne\StatamicPrivateApi\Facades\PrivateApi;
@@ -15,6 +16,10 @@ class ServiceProvider extends AddonServiceProvider
 {
     protected $actions = [
         Actions\DeleteHandler::class,
+    ];
+
+    protected $fieldtypes = [
+        Fieldtypes\EventTrigger::class,
     ];
 
     protected $routes = [
@@ -110,13 +115,21 @@ class ServiceProvider extends AddonServiceProvider
     {
         if (class_exists(PrivateApi::class)) {
             PrivateApi::addRoute(function () {
-                Route::prefix('/statamic-events/handlers')
+                Route::prefix('/statamic-events')
                     ->group(function () {
-                        Route::get('/', [HandlerController::class, 'index']);
-                        Route::get('{id}', [HandlerController::class, 'show']);
-                        Route::post('/', [HandlerController::class, 'store']);
-                        Route::patch('{id}', [HandlerController::class, 'update']);
-                        Route::delete('{id}', [HandlerController::class, 'destroy']);
+                        Route::prefix('/events')
+                            ->group(function () {
+                                Route::get('/', [EventController::class, 'index']);
+                            });
+
+                        Route::prefix('/handlers')
+                            ->group(function () {
+                                Route::get('/', [HandlerController::class, 'index']);
+                                Route::get('{id}', [HandlerController::class, 'show']);
+                                Route::post('/', [HandlerController::class, 'store']);
+                                Route::patch('{id}', [HandlerController::class, 'update']);
+                                Route::delete('{id}', [HandlerController::class, 'destroy']);
+                            });
                     });
             });
         }
