@@ -54,7 +54,7 @@ class ExecutionController extends StatamicController
         $blueprint = $this->blueprint();
 
         $sortField = $request->input('sort', 'created_at');
-        $sortDirection = $request->input('order', 'asc');
+        $sortDirection = $request->input('order', 'desc');
 
         $query = Execution::query()
             ->orderBy($sortField, $sortDirection)
