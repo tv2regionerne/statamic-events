@@ -63,6 +63,10 @@ class EventSubscriber
 
                             HandlerFailed::dispatch($handler, $execution, $e);
 
+                            if ($handler->throw_exception_on_fail && ! $handler->should_queue) {
+                                throw new \Exception('Failed: '.$e->getMessage());
+                            }
+
                             return;
                         }
                     }
