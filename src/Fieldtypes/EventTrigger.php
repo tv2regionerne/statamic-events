@@ -1,6 +1,6 @@
 <?php
 
-namespace Tv2regionerne\StatamicEvents\FieldTypes;
+namespace Tv2regionerne\StatamicEvents\Fieldtypes;
 
 use Statamic\Entries\Collection;
 use Statamic\Fields\Fieldtype;
