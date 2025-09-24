@@ -81,7 +81,7 @@ class ExecutionController extends StatamicController
         $record = Execution::find($record);
 
         if (! $record) {
-            throw new NotFoundHttpException();
+            throw new NotFoundHttpException;
         }
 
         $viewData = [
