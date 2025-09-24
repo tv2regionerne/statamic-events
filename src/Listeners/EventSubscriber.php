@@ -48,7 +48,7 @@ class EventSubscriber
 
                     if ($handler->filter) {
                         try {
-                            $result = (string)Antlers::parse($handler->filter, [
+                            $result = (string) Antlers::parse($handler->filter, [
                                 'eventName' => $eventName,
                                 'event' => collect($event)->toArray(),
                             ]);
@@ -59,7 +59,7 @@ class EventSubscriber
                                 return;
                             }
                         } catch (\Throwable $e) {
-                            $execution->fail(__('Error running filter: '. $e->getMessage()));
+                            $execution->fail(__('Error running filter: '.$e->getMessage()));
 
                             HandlerFailed::dispatch($handler, $execution, $e);
 
