@@ -20,15 +20,10 @@
             "providers": [
                 "Tv2regionerne\\StatamicEvents\\ServiceProvider"
             ]
-        },
-        "download-dist": {
-            "url": "https://github.com/tv2regionerne/statamic-events/releases/download/{$version}/dist.tar.gz",
-            "path": "dist"
         }
     },
     "require": {
         "php": "^8.2",
-        "pixelfear/composer-dist-plugin": "^0.1.5",
         "spatie/laravel-activitylog": "^4.7",
         "statamic/cms": "^4.46 || ^5.0"
     },
@@ -50,7 +45,6 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
-            "pixelfear/composer-dist-plugin": true,
             "composer/package-versions-deprecated": true,
             "pestphp/pest-plugin": true
         }
