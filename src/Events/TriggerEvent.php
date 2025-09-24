@@ -7,7 +7,5 @@ use Statamic\Events\Event;
 
 class TriggerEvent extends Event
 {
-    public function __construct(public Entry $entry)
-    {
-    }
+    public function __construct(public Entry $entry) {}
 }

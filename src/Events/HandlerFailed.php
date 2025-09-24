@@ -6,7 +6,5 @@ use Statamic\Events\Event;
 
 class HandlerFailed extends Event
 {
-    public function __construct(public $handler, public $execution, public $error)
-    {
-    }
+    public function __construct(public $handler, public $execution, public $error) {}
 }

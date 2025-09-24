@@ -166,7 +166,7 @@ class HandlerController extends StatamicController
         $record = Handler::find($record);
 
         if (! $record) {
-            throw new NotFoundHttpException();
+            throw new NotFoundHttpException;
         }
 
         $driver = Drivers::all()->get($record->driver) ?? Drivers::all()->first();
